@@ -1,7 +1,7 @@
-set(target ${MP2_LIBRARY})
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
-file(GLOB hdrs "*.h*" "${MP2_INCLUDE}/*.h*")
-file(GLOB srcs "*.cpp")
+add_library(${ProjectName} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+target_sources(${ProjectName} PRIVATE ${HEADER_FILES})
 
-add_library(${target} STATIC ${srcs} ${hdrs})
-target_link_libraries(${target} ${LIBRARY_DEPS})
+target_include_directories(${ProjectName} PUBLIC ${CMAKE_SOURCE_DIR}/src)
