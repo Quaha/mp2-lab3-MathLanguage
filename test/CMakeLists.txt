@@ -1,9 +1,10 @@
-set(target ${MP2_TESTS})
+file(GLOB_RECURSE TEST_FILES *.cpp)
 
-file(GLOB hdrs "*.h*")
-file(GLOB srcs "*.cpp")
+set(TestsName "Tests")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty")
+add_executable(${TestsName} ${TEST_FILES})
 
-add_executable(${target} ${srcs} ${hdrs})
-target_link_libraries(${target} gtest ${MP2_LIBRARY})
+target_link_libraries(${TestsName} PRIVATE ${ProjectName} gtest)
+
+enable_testing()
+add_test(NAME ${TestsName} COMMAND ${TestsName})

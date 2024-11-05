@@ -1,16 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(PROJECT_NAME MathLanguage)
-project(${PROJECT_NAME})
+set(ProjectName "MathLanguage")
 
-set(MP2_LIBRARY "${PROJECT_NAME}")
-set(MP2_TESTS   "test_${PROJECT_NAME}")
-set(MP2_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+project(${ProjectName})
 
-include_directories("${MP2_INCLUDE}" gtest)
+include_directories(include)
 
-# BUILD
-add_subdirectory(src)
 add_subdirectory(gtest)
+add_subdirectory(run)
+add_subdirectory(src)
 add_subdirectory(test)
-add_subdirectory(run_cmd)
