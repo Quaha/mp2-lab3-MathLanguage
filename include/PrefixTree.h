@@ -33,6 +33,9 @@ template<typename PrefixTreeType> struct PrefixTree {
 	}
 
 	int getNextState(int curr_state, char C) {
+		if (!nextStateExist(curr_state, C)) {
+			throw std::out_of_range("The requested state is not in the prefix tree!");
+		}
 		return nodes[curr_state].next[C];
 	}
 
