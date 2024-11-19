@@ -23,7 +23,7 @@ template<typename PrefixTreeType> struct PrefixTree {
 		nodes.push_back(Node());
 	}
 
-	bool nextStateExist(int curr_state, char C) {
+	bool nextStateExist(int curr_state, char C) const {
 		return (nodes[curr_state].next.find(C) != nodes[curr_state].next.end());
 	}
 
@@ -32,11 +32,11 @@ template<typename PrefixTreeType> struct PrefixTree {
 		nodes.push_back(Node());
 	}
 
-	int getNextState(int curr_state, char C) {
+	int getNextState(int curr_state, char C) const {
 		if (!nextStateExist(curr_state, C)) {
 			throw std::out_of_range("The requested state is not in the prefix tree!");
 		}
-		return nodes[curr_state].next[C];
+		return (*nodes[curr_state].next.find(C)).second;
 	}
 
 	void addWord(const std::string& S, PrefixTreeType* data_ptr) {
@@ -51,7 +51,7 @@ template<typename PrefixTreeType> struct PrefixTree {
 		nodes[curr_state].is_terminal = true;
 	}
 
-	bool exists(const std::string& S) {
+	bool exists(const std::string& S) const {
 		int curr_state = 0;
 		for (char C : S) {
 			if (!nextStateExist(curr_state, C)) {
@@ -62,7 +62,7 @@ template<typename PrefixTreeType> struct PrefixTree {
 		return nodes[curr_state].is_terminal;
 	}
 
-	PrefixTreeType* getData(const std::string& S) {
+	PrefixTreeType* getData(const std::string& S) const {
 		int curr_state = 0;
 		for (char C : S) {
 			if (!nextStateExist(curr_state, C)) {

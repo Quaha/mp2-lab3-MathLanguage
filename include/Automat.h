@@ -22,7 +22,7 @@ enum STATUSES {
 struct Automat {
 	struct Node {
 		std::map<char, int> next;
-		int status = NONE;
+		int status;
 		Node(int status) : status(status) {};
 	};
 
@@ -32,7 +32,7 @@ struct Automat {
 		nodes.push_back(Node(NONE));
 	}
 
-	bool nextStateExist(int curr_state, char C) {
+	bool nextStateExist(int curr_state, char C) const {
 		return (nodes[curr_state].next.find(C) != nodes[curr_state].next.end());
 	}
 
@@ -58,11 +58,11 @@ struct Automat {
 		nodes[curr_state].next[C] = next_state;
 	}
 
-	int getNextState(int curr_state, char C) {
+	int getNextState(int curr_state, char C) const {
 		if (!nextStateExist(curr_state, C)) {
 			throw std::out_of_range("The requested state is not in the automat!");
 		}
-		return nodes[curr_state].next[C];
+		return (*nodes[curr_state].next.find(C)).second;
 	}
 
 	int getStatus(int curr_state) {
