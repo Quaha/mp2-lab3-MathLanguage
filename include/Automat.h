@@ -6,13 +6,14 @@
 #include <map>
 
 enum STATUSES {
-	NONE     = 0,
-	INTEGER  = 1,
-	REAL     = 2,
-	VARIABLE = 3,
-	FUNCTION = 4,
-	OPERAND  = 5,
-	RIGHT_BRACKET = 6
+	NONE          = 0,
+	INTEGER       = 1,
+	REAL          = 2,
+	VARIABLE      = 3,
+	FUNCTION      = 4,
+	OPERAND       = 5,
+	RIGHT_BRACKET = 6,
+	ERROR         = 7
 };
 
 // Right bracket ")" is a special object, which performs the last function
