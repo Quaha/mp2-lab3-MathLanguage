@@ -1,6 +1,6 @@
 #include <gtest.h>
 
-#include <string>
+#include "includes.h"
 
 #include "PrefixTree.h"
 

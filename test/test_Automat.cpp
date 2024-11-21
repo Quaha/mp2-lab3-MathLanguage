@@ -1,4 +1,7 @@
 #include <gtest.h>
+
+#include "includes.h"
+
 #include "Automat.h"
 
 TEST(Automat, can_create_automat) {

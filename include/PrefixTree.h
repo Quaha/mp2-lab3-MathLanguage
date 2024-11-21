@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
+#include "includes.h"
 
 template<typename PrefixTreeType> struct PrefixTree {
 	struct Node {
