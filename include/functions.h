@@ -2,6 +2,12 @@
 
 #include "includes.h"
 
-Data max(const std::vector<integer>& integer_parameters,
-	const std::vector<real>& real_parameters,
+Data __RETURN__IT__SELF__( // ()
+	const std::vector<IntegerData>& integer_parameters,
+	const std::vector<RealData>& real_parameters,
+	const std::vector<type>& types_order);
+
+Data max( // max(value1, value2, ... )
+	const std::vector<IntegerData>& integer_parameters,
+	const std::vector<RealData>& real_parameters,
 	const std::vector<type>& types_order);

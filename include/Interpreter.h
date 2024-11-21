@@ -8,7 +8,8 @@
 struct Interpreter {
 
 	PrefixTree<void> program_data;
+	std::vector<int> number_of_operands; // Stack of the number of operands in the last visible area
 
 	Interpreter();
-
+	void execute(const std::string &line);
 };

@@ -47,3 +47,23 @@ enum STATUSES: type {
 
 	The space " " is a special object that is used to separate the input
 */
+
+struct IntegerData {
+	integer value;
+};
+
+struct RealData {
+	real value;
+};
+
+struct VariableData {
+	Data data;
+	bool is_const;
+};
+
+struct FunctionData {
+	Data (*function_ptr)(
+		const std::vector<IntegerData>& integer_parameters,
+		const std::vector<RealData>& real_parameters,
+		const std::vector<type>& types_order);
+};

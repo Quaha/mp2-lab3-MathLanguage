@@ -7,3 +7,7 @@
 Interpreter::Interpreter() {
 
 }
+
+void execute(const std::string& line) {
+
+}
