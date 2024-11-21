@@ -1,7 +1,7 @@
 #include "PrefixTree.h"
 #include "Automat.h"
 
-struct Compiler {
+struct Interpreter {
 
 	PrefixTree<void> program_data;
 
