@@ -8,6 +8,6 @@ Interpreter::Interpreter() {
 
 }
 
-void execute(const std::string& line) {
+void Interpreter::execute(const std::string& line) {
 
 }

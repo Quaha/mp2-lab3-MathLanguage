@@ -2,10 +2,11 @@
 
 #include "includes.h"
 
-template<typename PrefixTreeType> struct PrefixTree {
+template<typename DataType, typename ContainerType, typename TransitionType>
+struct PrefixTree {
 	struct Node {
-		std::map<char, int> next;
-		PrefixTreeType* data = nullptr;
+		std::map<TransitionType, int> next;
+		DataType* data = nullptr;
 		bool is_terminal = false;
 
 		~Node() {
@@ -20,25 +21,25 @@ template<typename PrefixTreeType> struct PrefixTree {
 		nodes.push_back(Node());
 	}
 
-	bool nextStateExist(int curr_state, char C) const {
+	bool nextStateExist(int curr_state, TransitionType C) const {
 		return (nodes[curr_state].next.find(C) != nodes[curr_state].next.end());
 	}
 
-	void createNextState(int curr_state, char C) {
+	void createNextState(int curr_state, TransitionType C) {
 		nodes[curr_state].next[C] = nodes.size();
 		nodes.push_back(Node());
 	}
 
-	int getNextState(int curr_state, char C) const {
+	int getNextState(int curr_state, TransitionType C) const {
 		if (!nextStateExist(curr_state, C)) {
 			throw std::out_of_range("The requested state is not in the prefix tree!");
 		}
 		return (*nodes[curr_state].next.find(C)).second;
 	}
 
-	void addWord(const std::string& S, PrefixTreeType* data_ptr) {
+	void addWord(const ContainerType& S, DataType* data_ptr) {
 		int curr_state = 0;
-		for (char C : S) {
+		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {
 				createNextState(curr_state, C);
 			}
@@ -48,9 +49,9 @@ template<typename PrefixTreeType> struct PrefixTree {
 		nodes[curr_state].is_terminal = true;
 	}
 
-	bool exists(const std::string& S) const {
+	bool exists(const ContainerType& S) const {
 		int curr_state = 0;
-		for (char C : S) {
+		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {
 				return false;
 			}
@@ -59,9 +60,9 @@ template<typename PrefixTreeType> struct PrefixTree {
 		return nodes[curr_state].is_terminal;
 	}
 
-	PrefixTreeType* getData(const std::string& S) const {
+	DataType* getData(const ContainerType& S) const {
 		int curr_state = 0;
-		for (char C : S) {
+		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {
 				throw std::out_of_range("The requested word is not in the prefix tree!");
 			}

@@ -16,7 +16,7 @@ inline integer rtoi(real value) { // real to integer
 	return static_cast<integer>(value);
 }
 
-using type = int
+using type = int;
 
 enum STATUSES: type {
 	NONE = 0,

@@ -7,7 +7,7 @@ Data __RETURN__IT__SELF__(const std::vector<Data>& parameters) { // ()
 	}
 	
 	Data result;
-	result.type = parametres[0].type;
+	result.type = parameters[0].type;
 	
 	switch (parameters[0].type) {
 		case INTEGER:

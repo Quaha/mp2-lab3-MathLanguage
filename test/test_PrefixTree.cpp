@@ -4,15 +4,9 @@
 
 #include "PrefixTree.h"
 
-TEST(PrefixTree, can_create) {
-
-	ASSERT_NO_THROW(PrefixTree<void> tree);
-
-}
-
 TEST(PrefixTree, can_add_words) {
 
-	PrefixTree<int> tree;
+	PrefixTree<void, std::string, char> tree;
 
 	ASSERT_NO_THROW(tree.addWord("abcd", nullptr));
 	ASSERT_NO_THROW(tree.addWord("abce", nullptr));
@@ -21,7 +15,7 @@ TEST(PrefixTree, can_add_words) {
 
 TEST(PrefixTree, can_check_words) {
 
-	PrefixTree<int> tree;
+	PrefixTree<void, std::string, char> tree;
 
 	tree.addWord("abcd", nullptr);
 	tree.addWord("abce", nullptr);
@@ -37,7 +31,7 @@ TEST(PrefixTree, can_check_words) {
 
 TEST(PrefixTree, can_get_data) {
 
-	PrefixTree<int> tree;
+	PrefixTree<int, std::string, char> tree;
 
 	int* a = new int;
 	int* b = new int;

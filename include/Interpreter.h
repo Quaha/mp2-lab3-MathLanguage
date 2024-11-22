@@ -7,7 +7,7 @@
 
 struct Interpreter {
 
-	PrefixTree<void> program_data;
+	PrefixTree<void, std::string, char> program_data;
 	std::vector<int> number_of_operands; // Stack of the number of operands in the last visible area
 
 	Interpreter();
