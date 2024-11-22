@@ -35,12 +35,6 @@ enum STATUSES: type {
 
 	The comma "," is a special object that separates the input into a function used
 	to count the number of arguments
-
-	The colon ";" is a special object that means the end of a string. In fact, the end of
-	the line does not have to be marked manually, this character is automatically appended
-	to the end of the line
-
-	The space " " is a special object that is used to separate the input
 */
 
 struct Data {
@@ -63,5 +57,5 @@ struct VariableData {
 };
 
 struct FunctionData {
-	Data (*function_ptr)(const std::vector<Data>& parameters);
+	std::string name;
 };
