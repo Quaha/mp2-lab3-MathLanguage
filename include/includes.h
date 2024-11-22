@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 using real = long double;
 using integer = long long;
@@ -14,6 +15,14 @@ inline real itor(integer value) { // integer to real
 
 inline integer rtoi(real value) { // real to integer
 	return static_cast<integer>(value);
+}
+
+inline integer stoi(const std::string value) { // string to integer
+	return static_cast<integer>(stoll(value));
+}
+
+inline real stor(const std::string value) { // string to real
+	return static_cast<real>(stold(value));
 }
 
 using type = int;

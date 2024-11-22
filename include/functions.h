@@ -2,4 +2,4 @@
 
 #include "includes.h"
 
-Data __RETURN__IT__SELF__(const std::vector<Data>& parameters); // ()
+Data __LEFT__BRACKET__OPERATOR__(const std::vector<Data>& parameters);
