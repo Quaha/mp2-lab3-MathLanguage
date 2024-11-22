@@ -16,12 +16,7 @@ inline integer rtoi(real value) { // real to integer
 	return static_cast<integer>(value);
 }
 
-using type = int;
-
-struct Data {
-	type type = 0;
-	void* data_ptr = nullptr;
-};
+using type = int
 
 enum STATUSES: type {
 	NONE = 0,
@@ -48,6 +43,11 @@ enum STATUSES: type {
 	The space " " is a special object that is used to separate the input
 */
 
+struct Data {
+	type type = NONE;
+	void* data_ptr = nullptr;
+};
+
 struct IntegerData {
 	integer value;
 };
@@ -57,13 +57,11 @@ struct RealData {
 };
 
 struct VariableData {
-	Data data;
+	std::string name;
+	type type = NONE;
 	bool is_const;
 };
 
 struct FunctionData {
-	Data (*function_ptr)(
-		const std::vector<IntegerData>& integer_parameters,
-		const std::vector<RealData>& real_parameters,
-		const std::vector<type>& types_order);
+	Data (*function_ptr)(const std::vector<Data>& parameters);
 };
