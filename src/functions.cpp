@@ -2,6 +2,10 @@
 
 Data __RETURN__IT__SELF__(const std::vector<Data>& parameters) { // ()
 
+	if (parameters.empty()) {
+                throw std::invalid_argument("");
+	}
+	
 	Data result;
 
 	if (integer_parameters.size() == 1) {
