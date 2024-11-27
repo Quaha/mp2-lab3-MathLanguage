@@ -68,3 +68,31 @@ struct VariableData {
 struct FunctionData {
 	std::string name;
 };
+
+inline IntegerData* toIntegerData(const Data& data) {
+	if (data.type == INTEGER && data.data_ptr) {
+		return static_cast<IntegerData*>(data.data_ptr);
+	}
+	return nullptr;
+}
+
+inline RealData* toRealData(const Data& data) {
+	if (data.type == REAL && data.data_ptr) {
+		return static_cast<RealData*>(data.data_ptr);
+	}
+	return nullptr;
+}
+
+inline VariableData* toVariableData(const Data& data) {
+	if (data.type == VARIABLE && data.data_ptr) {
+		return static_cast<VariableData*>(data.data_ptr);
+	}
+	return nullptr;
+}
+
+inline FunctionData* toFunctionData(const Data& data) {
+	if (data.type == FUNCTION && data.data_ptr) {
+		return static_cast<FunctionData*>(data.data_ptr);
+	}
+	return nullptr;
+}

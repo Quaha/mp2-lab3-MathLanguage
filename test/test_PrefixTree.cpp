@@ -4,7 +4,7 @@
 
 #include "PrefixTree.h"
 
-TEST(PrefixTree, can_add_words) {
+TEST(PrefixTree, canAddWords) {
 
 	PrefixTree<void, std::string, char> tree;
 
@@ -13,7 +13,7 @@ TEST(PrefixTree, can_add_words) {
 	ASSERT_NO_THROW(tree.addWord("f", nullptr));
 }
 
-TEST(PrefixTree, can_find_words) {
+TEST(PrefixTree, canFindWords) {
 
 	PrefixTree<void, std::string, char> tree;
 
@@ -26,7 +26,7 @@ TEST(PrefixTree, can_find_words) {
 	EXPECT_EQ(tree.exists("f"), true);
 }
 
-TEST(PrefixTree, cant_find_words) {
+TEST(PrefixTree, cantFindWords) {
 
 	PrefixTree<void, std::string, char> tree;
 
@@ -38,7 +38,7 @@ TEST(PrefixTree, cant_find_words) {
 	EXPECT_EQ(tree.exists("bfs"), false);
 }
 
-TEST(PrefixTree, can_get_data) {
+TEST(PrefixTree, canGetData) {
 
 	PrefixTree<int, std::string, char> tree;
 
@@ -55,7 +55,7 @@ TEST(PrefixTree, can_get_data) {
 	EXPECT_EQ(*tree.getData("f"), 3);
 }
 
-TEST(PrefixTree, cant_get_data) {
+TEST(PrefixTree, cantGetData) {
 
 	PrefixTree<int, std::string, char> tree;
 
@@ -72,7 +72,7 @@ TEST(PrefixTree, cant_get_data) {
 	ASSERT_ANY_THROW(tree.getData("123"));
 }
 
-TEST(PrefixTree, can_check_existence) {
+TEST(PrefixTree, canCheckExistence) {
 
 	PrefixTree<int, std::string, char> tree;
 

@@ -2,4 +2,6 @@
 
 #include "includes.h"
 
-Data __LEFT__BRACKET__OPERATOR__(const std::vector<Data>& parameters);
+#include "Interpreter.h"
+
+Data __LEFT__BRACKET__OPERATOR__(const std::vector<Data>& parameters, Interpreter &program);

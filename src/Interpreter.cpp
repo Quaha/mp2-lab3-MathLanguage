@@ -3,6 +3,7 @@
 #include "PrefixTree.h"
 #include "Automat.h"
 #include "Interpreter.h"
+#include "functions.h"
 
 Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	for (char C = 'a'; C <= 'z'; ++C) {
@@ -138,6 +139,7 @@ Interpreter::Interpreter() {
 
 }
 
-void Interpreter::execute(const std::string& line) {
+Data Interpreter::execute(const std::string& line) {
 
+	return Data();
 }

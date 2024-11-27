@@ -4,11 +4,11 @@
 
 #include "Automat.h"
 
-TEST(Automat, can_create_automat) {
+TEST(Automat, canCreateAutomat) {
     ASSERT_NO_THROW(Automat automat);
 }
 
-TEST(Automat, can_add_and_check_next_state) {
+TEST(Automat, canAddAndCheckNextState) {
     Automat automat;
 
     int start_state = 0;
@@ -19,13 +19,13 @@ TEST(Automat, can_add_and_check_next_state) {
     EXPECT_TRUE(automat.nextStateExist(start_state, transition_char));
 }
 
-TEST(Automat, next_state_does_not_exist_by_default) {
+TEST(Automat, nextStateDoesNotExistByDefault) {
     Automat automat;
 
     EXPECT_EQ(automat.nextStateExist(0, 'x'), false);
 }
 
-TEST(Automat, can_transition_to_next_state) {
+TEST(Automat, canTransitionToNextState) {
     Automat automat;
 
     int start_state = 0;
@@ -37,7 +37,7 @@ TEST(Automat, can_transition_to_next_state) {
     EXPECT_EQ(automat.getNextState(start_state, transition_char), 1);
 }
 
-TEST(Automat, can_get_status_of_state) {
+TEST(Automat, canGetStatusOfState) {
     Automat automat;
 
     int start_state = 0;
@@ -50,7 +50,7 @@ TEST(Automat, can_get_status_of_state) {
     EXPECT_EQ(automat.getStatus(next_state), VARIABLE);
 }
 
-TEST(Automat, invalid_transition) {
+TEST(Automat, invalidTransition) {
     Automat automat;
 
     int start_state = 0;
@@ -59,7 +59,7 @@ TEST(Automat, invalid_transition) {
     ASSERT_ANY_THROW(automat.getNextState(start_state, invalid_char));
 }
 
-TEST(Automat, can_create_new_state) {
+TEST(Automat, canCreateNewState) {
     Automat automat;
 
     int new_status = FUNCTION;
@@ -68,7 +68,7 @@ TEST(Automat, can_create_new_state) {
     EXPECT_EQ(automat.getStatus(1), FUNCTION);
 }
 
-TEST(Automat, can_add_transition_between_states) {
+TEST(Automat, canAddTransitionBetweenStates) {
     Automat automat;
 
     int start_status = INTEGER;
@@ -86,7 +86,7 @@ TEST(Automat, can_add_transition_between_states) {
     EXPECT_EQ(automat.getNextState(start_state, transition_char), next_state);
 }
 
-TEST(Automat, invalid_state_in_add_transition) {
+TEST(Automat, invalidStateInAddTransition) {
     Automat automat;
 
     automat.createNewState(INTEGER);

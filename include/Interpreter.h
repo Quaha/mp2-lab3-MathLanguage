@@ -26,5 +26,5 @@ struct Interpreter {
 	LexicalAnalyzer lexical_analyzer;
 
 	Interpreter();
-	void execute(const std::string &line);
+	Data execute(const std::string &line);
 };
