@@ -2,6 +2,7 @@
 
 #include "functions.h"
 #include "Interpreter.h"
+#include "Data.h"
 
 std::vector<type> getParametersTypes(const std::vector<Data>& parameters, Interpreter& program) {
 
@@ -9,7 +10,7 @@ std::vector<type> getParametersTypes(const std::vector<Data>& parameters, Interp
 	std::vector<type> parameters_types(N, NONE);
 
 	for (int i = 0; i < N; ++i) {
-		type current_type = parameters[i].type;
+		type current_type = parameters[i].getType();
 
 		if (current_type == INTEGER) {
 			parameters_types[i] = INTEGER;
@@ -48,20 +49,21 @@ Data __LEFT__BRACKET__OPERATOR__(const std::vector<Data>& parameters, Interprete
 	type current_type = parameters_types[0];
 
 	if (current_type == INTEGER) {
-		result = getDataCopy(parameters[0]);
+		result = parameters[0];
 	}
 
 	else if (current_type == REAL) {
-		result = getDataCopy(parameters[0]);
+		result = parameters[0];
 	}
 
 	else if (current_type == VARIABLE) {
 		VariableData* var_ptr = toVariableDataPtr(parameters[0]);
 		
 		type type = var_ptr->type;
-		void *ptr = 
+		void* ptr = copyVoidPtr(program.program_data.getData(var_ptr->name), type);
 
-		//*result.data_ptr = program.program_data.getData(var_ptr->name);
+		result.data_type = type;
+		result.data_ptr = ptr;
 
 	}
 

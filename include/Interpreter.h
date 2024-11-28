@@ -4,6 +4,7 @@
 
 #include "PrefixTree.h"
 #include "Automat.h"
+#include "Data.h"
 
 struct Interpreter {
 

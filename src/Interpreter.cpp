@@ -4,6 +4,7 @@
 #include "Automat.h"
 #include "Interpreter.h"
 #include "functions.h"
+#include "Data.h"
 
 Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	for (char C = 'a'; C <= 'z'; ++C) {

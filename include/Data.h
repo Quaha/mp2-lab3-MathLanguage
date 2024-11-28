@@ -30,14 +30,14 @@ struct Data {
 	void copy(type other_type, void* other_ptr);
 
 	Data() {};
-	Data(type other_type, void* other_ptr){}
+	Data(type other_type, void* other_ptr);
 	~Data();
 
 	Data(const Data& other);
 	Data& operator=(const Data& other);
 
-	Data(Data&&) = delete;
-	Data& operator=(Data&&) = delete;
+	Data(Data&& other);
+	Data& operator=(Data&& other);
 
 	type getType() const{
 		return data_type;
@@ -47,6 +47,8 @@ struct Data {
 		return data_ptr;
 	}
 };
+
+void* copyVoidPtr(void* ptr, type t);
 
 // Basic conversions
 
