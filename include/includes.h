@@ -9,6 +9,8 @@
 using real = long double;
 using integer = long long;
 
+// Basic conversions
+
 inline real itor(integer value) { // integer to real
 	return static_cast<real>(value);
 }
@@ -45,54 +47,3 @@ enum STATUSES: type {
 	The comma "," is a special object that separates the input into a function used
 	to count the number of arguments
 */
-
-struct Data {
-	type type = NONE;
-	void* data_ptr = nullptr;
-};
-
-struct IntegerData {
-	integer value;
-};
-
-struct RealData {
-	real value;
-};
-
-struct VariableData {
-	std::string name;
-	type type = NONE;
-	bool is_const;
-};
-
-struct FunctionData {
-	std::string name;
-};
-
-inline IntegerData* toIntegerData(const Data& data) {
-	if (data.type == INTEGER && data.data_ptr) {
-		return static_cast<IntegerData*>(data.data_ptr);
-	}
-	return nullptr;
-}
-
-inline RealData* toRealData(const Data& data) {
-	if (data.type == REAL && data.data_ptr) {
-		return static_cast<RealData*>(data.data_ptr);
-	}
-	return nullptr;
-}
-
-inline VariableData* toVariableData(const Data& data) {
-	if (data.type == VARIABLE && data.data_ptr) {
-		return static_cast<VariableData*>(data.data_ptr);
-	}
-	return nullptr;
-}
-
-inline FunctionData* toFunctionData(const Data& data) {
-	if (data.type == FUNCTION && data.data_ptr) {
-		return static_cast<FunctionData*>(data.data_ptr);
-	}
-	return nullptr;
-}
