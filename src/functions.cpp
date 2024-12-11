@@ -4,36 +4,37 @@
 #include "Interpreter.h"
 #include "Data.h"
 
-vector<type> getParametersTypes(const vector<Data>& parameters, Interpreter& program) {
+vector<type> getParametersTypes(const vector<unique_ptr<Data>>& parameters, Interpreter& program) {
 
-	int N = parameters.size();
-	vector<type> parameters_types(N, NONE);
+    int N = parameters.size();
+    vector<type> parameters_types(N, NONE);
 
-	for (int i = 0; i < N; ++i) {
-		type current_type = parameters[i].getType();
+    for (int i = 0; i < N; ++i) {
+        type current_type = parameters[i]->getType();
 
-		if (current_type == INTEGER) {
-			parameters_types[i] = INTEGER;
-		}
+        if (current_type == INTEGER) {
+            parameters_types[i] = INTEGER;
+        }
 
-		else if (current_type == REAL) {
-			parameters_types[i] = REAL;
-		}
+        else if (current_type == REAL) {
+            parameters_types[i] = REAL;
+        }
 
-		else if (current_type == VARIABLE) {
-			VariableData* var_ptr = toVariableDataPtr(parameters[i]);
-			if (!program.program_data.exists(var_ptr->name)) {
-				std::invalid_argument("Error in function parameters: using an uninitialized variable " + var_ptr->name + "!");
-			}
-			parameters_types[i] = var_ptr->type;
-		}
+        else if (current_type == VARIABLE) {
+            VariableData* variable_ptr = dynamic_cast<VariableData*>(parameters[i].get());
+            if (!program.program_data.exists(variable_ptr->name)) {
+                throw std::invalid_argument("ERROR: using an uninitialized variable!");
+            }
 
-		else {
-			throw std::invalid_argument("Error in function parameters: invalid type!");
-		}
-	}
+            
+            parameters_types[i] = var_ptr->varType;
+        }
+        else {
+            throw std::invalid_argument("ERROR: invalid type!");
+        }
+    }
 
-	return parameters_types;
+    return parameters_types;
 }
 
 Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters, Interpreter& program) {

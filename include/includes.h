@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <memory>
 
 using real = long double;
 using integer = long long;
@@ -13,6 +14,10 @@ using std::vector;
 using std::string;
 using std::map;
 using std::set;
+
+using std::unique_ptr;
+using std::shared_ptr;
+using std::weak_ptr;
 
 // Basic conversions
 
@@ -46,9 +51,9 @@ enum STATUSES: type {
 };
 
 /* Special Symbols:
-	Right bracket ")" is a special object, which performs the last function
+	The right bracket ")" is a special object, which performs the last function
 	In fact, left bracket "(" is a function, which takes one number and return it
 
-	The comma "," is a special object that separates the input into a function used
-	to count the number of arguments
+	The space " " and "`" is a special characters which serves as a visual text separator.
+	When processing data, it is deleted.
 */

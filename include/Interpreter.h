@@ -8,9 +8,8 @@
 
 struct Interpreter {
 
-	PrefixTree<void, string, char> program_data;
-	PrefixTree<void, string, char> names_information;
-	vector<int> number_of_operands; // stack of the number of operands in the last visible area
+	PrefixTree<unique_ptr<Data>, string, char> program_data;
+	PrefixTree<unique_ptr<Data>, string, char> names_information;
 
 	struct LexicalAnalyzer {
 
@@ -23,11 +22,11 @@ struct Interpreter {
 
 		LexicalAnalyzer();
 
-		vector<Data> divisionIntoTokens(const std::string& line) const;
+		vector<unique_ptr<Data>> divideIntoTokens(const std::string& line) const;
 	};
 
 	LexicalAnalyzer lexical_analyzer;
 
 	Interpreter();
-	Data execute(const std::string &line);
+	unique_ptr<Data> execute(const std::string &line);
 };
