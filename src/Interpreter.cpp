@@ -9,21 +9,28 @@
 Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	for (char C = 'a'; C <= 'z'; ++C) {
 		allowed_symbols.insert(C);
-		names_symbols.insert(C);
 	}
 	for (char C = 'A'; C <= 'Z'; ++C) {
 		allowed_symbols.insert(C);
-		names_symbols.insert(C);
 	}
 	for (char C = '0'; C <= '9'; ++C) {
 		allowed_symbols.insert(C);
-		digits_symbols.insert(C);
 	}
 	allowed_symbols.insert('_');
-	names_symbols.insert('_');
-
 	allowed_symbols.insert('(');
 	allowed_symbols.insert(')');
+
+	for (char C = 'a'; C <= 'z'; ++C) {
+		names_symbols.insert(C);
+	}
+
+	for (char C = 'A'; C <= 'Z'; ++C) {
+		names_symbols.insert(C);
+	}
+	names_symbols.insert('_');
+	
+	separating_characters.insert(' ');
+	separating_characters.insert('`');
 
 	//Automat states
 	tokens.setStateStatus(0, NONE); // start state
@@ -100,37 +107,67 @@ Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	}
 }
 
-std::vector<Data> Interpreter::LexicalAnalyzer::divisionIntoTokens(const std::string& line) const {
+vector<Data> Interpreter::LexicalAnalyzer::divisionIntoTokens(const string& line) const {
+	string correct_line = "";
 	for (char C : line) {
-		if (allowed_symbols.find(C) == allowed_symbols.end()) {
+		if (separating_characters.count(C)) {
+			continue;
+		}
+		else if (!allowed_symbols.count(C)) {
 			throw std::runtime_error("ERROR: A forbidden symbol has been used: " + C);
+		}
+		else {
+			correct_line.push_back(C);
 		}
 	}
 
-	std::vector<Data> result(0);
+	vector<Data> result(0);
 
 	int curr_state = 0;
+	string stack(0);
 	
-	int line_start = 0;
-	for (int curr_position = 0; curr_position < line.size(); ++curr_position) {
-		char C = line[curr_position];
+	for (int curr_position = 0; curr_position < correct_line.size(); ++curr_position) {
+		char C = correct_line[curr_position];
 
 		int next_state = tokens.getNextState(curr_state, C);
 
 		int curr_status = tokens.getStatus(curr_state);
 		int next_status = tokens.getStatus(next_state);
 
+
 		if (next_status == ERROR) {
 			if (tokens.getStatus(curr_state) == NONE) {
 				throw std::runtime_error("ERROR: A lexical error in the following position: " + (char)curr_position);
 			}
+			else if (tokens.getStatus(curr_state) == INTEGER){
+				result.push_back(integerDataToData(stringToIntegerData(stack)));
+			}
+			else if (tokens.getStatus(curr_state) == REAL) {
+				result.push_back(realDataToData(stringToRealData(stack)));
+			}
+			else if (tokens.getStatus(curr_state) == VARIABLE) {
+				
+			}
+			else if (tokens.getStatus(curr_state) == FUNCTION) {
+
+			}
+			else if (tokens.getStatus(curr_state) == OPERAND) {
+
+			}
+			else if (tokens.getStatus(curr_state) == SPECIAL_SYMBOL) {
+
+			}
+			else if (tokens.getStatus(curr_state) == ERROR) {
+
+			}
 			else {
-				// code
+				throw std::runtime_error("ERROR: unknown type in lexical analyzer!");
 			}
 		}
 		else {
 			curr_state = next_state;
 		}
+		stack.push_back(C);
 	}
 
 	return result;
@@ -140,7 +177,7 @@ Interpreter::Interpreter() {
 
 }
 
-Data Interpreter::execute(const std::string& line) {
+Data Interpreter::execute(const string& line) {
 
 	return Data();
 }

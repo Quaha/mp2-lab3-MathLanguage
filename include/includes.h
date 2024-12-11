@@ -9,6 +9,11 @@
 using real = long double;
 using integer = long long;
 
+using std::vector;
+using std::string;
+using std::map;
+using std::set;
+
 // Basic conversions
 
 inline real itor(integer value) { // integer to real

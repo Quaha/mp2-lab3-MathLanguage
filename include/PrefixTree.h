@@ -5,7 +5,7 @@
 template<typename DataType, typename ContainerType, typename TransitionType>
 struct PrefixTree {
 	struct Node {
-		std::map<TransitionType, int> next;
+		map<TransitionType, int> next;
 		DataType* data = nullptr;
 		bool is_terminal = false;
 
@@ -15,7 +15,7 @@ struct PrefixTree {
 		}
 	};
 
-	std::vector<Node> nodes;
+	vector<Node> nodes;
 
 	PrefixTree() {
 		nodes.push_back(Node());

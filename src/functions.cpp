@@ -4,10 +4,10 @@
 #include "Interpreter.h"
 #include "Data.h"
 
-std::vector<type> getParametersTypes(const std::vector<Data>& parameters, Interpreter& program) {
+vector<type> getParametersTypes(const vector<Data>& parameters, Interpreter& program) {
 
 	int N = parameters.size();
-	std::vector<type> parameters_types(N, NONE);
+	vector<type> parameters_types(N, NONE);
 
 	for (int i = 0; i < N; ++i) {
 		type current_type = parameters[i].getType();
@@ -36,9 +36,9 @@ std::vector<type> getParametersTypes(const std::vector<Data>& parameters, Interp
 	return parameters_types;
 }
 
-Data __LEFT__BRACKET__OPERATOR__(const std::vector<Data>& parameters, Interpreter& program) {
+Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters, Interpreter& program) {
 
-	std::vector<type> parameters_types = getParametersTypes(parameters, program);
+	vector<type> parameters_types = getParametersTypes(parameters, program);
 
 	Data result;
 

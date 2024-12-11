@@ -13,13 +13,13 @@ struct RealData {
 };
 
 struct VariableData {
-	std::string name;
+	string name;
 	type type = NONE;
 	bool is_const;
 };
 
 struct FunctionData {
-	std::string name;
+	string name;
 };
 
 struct Data {
@@ -79,3 +79,56 @@ inline FunctionData* toFunctionDataPtr(const Data& data) {
 	}
 	return nullptr;
 }
+
+inline IntegerData stringToIntegerData(const std::string& S) {
+	IntegerData result;
+	result.value = stoll(S);
+	return result;
+}
+
+inline RealData stringToRealData(const std::string& S) {
+	RealData result;
+	result.value = stol(S);
+	return result;
+}
+
+inline VariableData stringToVariableData(const std::string& S) {
+	VariableData result;
+	//code
+	return result;
+}
+
+inline FunctionData stringToFunctionData(const std::string& S) {
+	FunctionData result;
+	//code
+	return result;
+}
+
+inline Data integerDataToData(const IntegerData& integerData) {
+	Data result;
+	result.data_type = INTEGER;
+	result.data_ptr = new IntegerData(integerData);
+	return result;
+}
+
+inline Data realDataToData(const RealData& realData) {
+	Data result;
+	result.data_type = REAL;
+	result.data_ptr = new RealData(realData);
+	return result;
+}
+
+inline Data variableDataToData(const VariableData& variableData) {
+	Data result;
+	result.data_type = VARIABLE;
+	result.data_ptr = new VariableData(variableData);
+	return result;
+}
+
+inline Data functionDataToData(const FunctionData& functionData) {
+	Data result;
+	result.data_type = FUNCTION;
+	result.data_ptr = new FunctionData(functionData); 
+	return result;
+}
+

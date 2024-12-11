@@ -8,20 +8,22 @@
 
 struct Interpreter {
 
-	PrefixTree<void, std::string, char> program_data;
-	std::vector<int> number_of_operands; // stack of the number of operands in the last visible area
+	PrefixTree<void, string, char> program_data;
+	PrefixTree<void, string, char> names_information;
+	vector<int> number_of_operands; // stack of the number of operands in the last visible area
 
 	struct LexicalAnalyzer {
 
 		Automat tokens;
 
-		std::set<char> allowed_symbols; // a...z A...Z 0...9 _ ( )
-		std::set<char> names_symbols; // a...z A...Z _ 
-		std::set<char> digits_symbols; // 0...9
+		set<char> allowed_symbols; // a...z A...Z 0...9 _ ( )
+		set<char> separating_characters; // SPACE `
+		set<char> names_symbols; // a...z A...Z _ 
+		set<char> digits_symbols; // 0...9
 
 		LexicalAnalyzer();
 
-		std::vector<Data> divisionIntoTokens(const std::string& line) const;
+		vector<Data> divisionIntoTokens(const std::string& line) const;
 	};
 
 	LexicalAnalyzer lexical_analyzer;
