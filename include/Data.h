@@ -2,8 +2,7 @@
 
 #include "includes.h"
 
-class Data {
-public:
+struct Data {
     virtual ~Data() = default;
     virtual type getType() const = 0;
 };
@@ -31,10 +30,8 @@ struct RealData : public Data {
 struct VariableData : public Data {
     string name;
     type variable_type = NONE;
-    bool is_const;
 
-    VariableData(const string& name, type variable_type, bool is_const)
-        : name(name), variable_type(variable_type), is_const(is_const) {}
+    VariableData(const string& name, type var_type): name(name), variable_type(var_type){}
 
     type getType() const override {
         return VARIABLE;
@@ -43,10 +40,15 @@ struct VariableData : public Data {
 
 struct FunctionData : public Data {
     string name;
+    function_ptr function;
 
-    FunctionData(const string& name) : name(name) {}
+    FunctionData(const string& name, function_ptr func) : name(name), function(func) {}
 
     type getType() const override {
         return FUNCTION;
+    }
+
+    shared_ptr<Data> call(const vector<shared_ptr<Data>>& parameters, Interpreter& program) const {
+        return function(parameters, program);
     }
 };

@@ -4,7 +4,7 @@
 #include "Interpreter.h"
 #include "Data.h"
 
-vector<type> getParametersTypes(const vector<unique_ptr<Data>>& parameters, Interpreter& program) {
+vector<type> getParametersTypes(const vector<shared_ptr<Data>>& parameters, Interpreter& program) {
 
     int N = parameters.size();
     vector<type> parameters_types(N, NONE);

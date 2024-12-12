@@ -125,7 +125,7 @@ Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	
 }
 
-vector<unique_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) const {
+vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) const {
 	string correct_line = "";
 	for (char C : line) {
 		if (separating_characters.count(C)) {
@@ -139,7 +139,7 @@ vector<unique_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const st
 		}
 	}
 
-	vector<unique_ptr<Data>> result(0);
+	vector<shared_ptr<Data>> result(0);
 
 	int curr_state = 0;
 	string stack(0);
@@ -194,7 +194,7 @@ Interpreter::Interpreter() {
 
 }
 
-unique_ptr<Data> Interpreter::execute(const string& line) {
+shared_ptr<Data> Interpreter::execute(const string& line) {
 
-	return unique_ptr<Data>();
+	return shared_ptr<Data>();
 }

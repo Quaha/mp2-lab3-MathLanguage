@@ -6,7 +6,7 @@ template<typename DataType, typename ContainerType, typename TransitionType>
 struct PrefixTree {
 	struct Node {
 		map<TransitionType, int> next;
-		DataType* data = nullptr;
+		shared_ptr<DataType> data = nullptr;
 		bool is_terminal = false;
 
 		~Node() {
@@ -60,7 +60,7 @@ struct PrefixTree {
 		return nodes[curr_state].is_terminal;
 	}
 
-	DataType* getData(const ContainerType& S) const {
+	shared_ptr<DataType> data getData(const ContainerType& S) const {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {

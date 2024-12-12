@@ -19,6 +19,8 @@ using std::unique_ptr;
 using std::shared_ptr;
 using std::weak_ptr;
 
+using function_ptr = Data(*)(const vector<shared_ptr<Data>>&);
+
 // Basic conversions
 
 inline real itor(integer value) { // integer to real
@@ -39,7 +41,7 @@ inline real stor(const std::string value) { // string to real
 
 using type = int;
 
-enum STATUSES: type {
+enum STATUSES : type {
 	NONE = 0,
 	INTEGER = 1,
 	REAL = 2,
@@ -47,7 +49,7 @@ enum STATUSES: type {
 	FUNCTION = 4,
 	OPERAND = 5,
 	SPECIAL_SYMBOL = 6,
-	ERROR = 7
+	ERROR = 7,
 };
 
 /* Special Symbols:

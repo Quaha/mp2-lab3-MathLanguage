@@ -8,8 +8,8 @@
 
 struct Interpreter {
 
-	PrefixTree<unique_ptr<Data>, string, char> program_data;
-	PrefixTree<unique_ptr<Data>, string, char> names_information;
+	PrefixTree<shared_ptr<Data>, string, char> program_data;
+	PrefixTree<shared_ptr<Data>, string, char> names_information;
 
 	struct LexicalAnalyzer {
 
@@ -22,11 +22,11 @@ struct Interpreter {
 
 		LexicalAnalyzer();
 
-		vector<unique_ptr<Data>> divideIntoTokens(const std::string& line) const;
+		vector<shared_ptr<Data>> divideIntoTokens(const string& line) const;
 	};
 
 	LexicalAnalyzer lexical_analyzer;
 
 	Interpreter();
-	unique_ptr<Data> execute(const std::string &line);
+	shared_ptr<Data> execute(const string &line);
 };
