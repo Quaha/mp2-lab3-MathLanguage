@@ -8,7 +8,7 @@ int main() {
 
 	while (true) {
 		std::string line;
-		std::cin >> line;
+		getline(std::cin, line);
 
 		Data result = program.execute(line);
 		if (result.data_type == INTEGER || result.data_type == REAL) {

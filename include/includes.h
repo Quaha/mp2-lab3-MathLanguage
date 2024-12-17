@@ -7,6 +7,9 @@
 #include <set>
 #include <memory>
 #include <functional>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 using std::vector;
 using std::string;
@@ -34,6 +37,18 @@ inline real_type _stor(const std::string value) { // string to real
 	return static_cast<real_type>(stold(value));
 }
 
+inline std::string _itos(integer_type value) { // integer to string
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}
+
+inline std::string _rtos(real_type value) { // real to string
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}
+
 using std::unique_ptr;
 using std::shared_ptr;
 
@@ -58,9 +73,8 @@ enum STATUSES : type {
 	The space " " and "`" is a special characters, which serves as a visual text separator.
 	When processing data, it is deleted.
 
-	The space " " and "`" is a special characters, which serves as a visual text separator.
-	When processing data, it is deleted.
-
 	The colon ";" is the end of the string. After it, the line reading will end. You don't
 	have to specify it at the end of the line, it is inserted automatically
+
+	The comma "," is a special character that separates the arguments of the function
 */

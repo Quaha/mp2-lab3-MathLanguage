@@ -23,6 +23,7 @@ void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.allowed_symbols.insert('(');
 	analyzer.allowed_symbols.insert(')');
 	analyzer.allowed_symbols.insert(';');
+	analyzer.allowed_symbols.insert(',');
 
 	// Degits symbols
 	for (char C = '0'; C <= '9'; ++C) {
@@ -70,7 +71,7 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.tokens_aut.addTransition(0, 11, '(');
 	analyzer.tokens_aut.addTransition(0, 12, ')');
 	analyzer.tokens_aut.addTransition(0, 12, ';');
-
+	analyzer.tokens_aut.addTransition(0, 12, ',');
 
 	// Zero integer
 	for (char C : analyzer.allowed_symbols) {
@@ -160,8 +161,8 @@ vector<Data> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) 
 			if (curr_status == NONE) {
 				throw std::runtime_error("ERROR: a lexical error!");
 			}
-			else if (curr_status == INTEGER        ||
-					 curr_status == REAL           ||
+			else if (curr_status == INTEGER ||
+					 curr_status == REAL ||
 					 curr_status == SPECIAL_SYMBOL){
 				
 				tokens.push_back(Data(curr_status, stack));
@@ -215,6 +216,7 @@ vector<Data> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) 
 
 void processFunctionData() {
 	global_memory->function_data.addWord("(", std::make_shared<function_type>(__LEFT__BRACKET__OPERATOR__));
+	global_memory->function_data.addWord("sum(", std::make_shared<function_type>(sum));
 }
 
 Interpreter::Interpreter() {
@@ -224,7 +226,6 @@ Interpreter::Interpreter() {
 
 }
 
-#include <iostream>
 Data Interpreter::execute(const string& line) {
 
 	vector<Data> tokens = lexical_analyzer.divideIntoTokens(line);
@@ -232,6 +233,63 @@ Data Interpreter::execute(const string& line) {
 	//for (int i = 0; i < tokens.size(); i++) {
 	//	std::cout << tokens[i].getType() << " " << tokens[i].getData() << '\n';
 	//}
+
+	vector<Data> values(0);
+	vector<Data> actions(0);
+
+	for (int i = 0; i < tokens.size(); i++) {
+		Data curr_token = tokens[i];
+		if (curr_token.getType() == INTEGER ||
+			curr_token.getType() == REAL ||
+			curr_token.getType() == VARIABLE ||
+			curr_token.getType() == INTEGER_VARIABLE ||
+			curr_token.getType() == REAL_VARIABLE) {
+			values.push_back(curr_token);
+		}
+		else if (curr_token.getType() == SPECIAL_SYMBOL) {
+			if (curr_token.getData() == ")") {
+				vector<Data> parameters(0);
+				parameters.push_back(values.back());
+				values.pop_back();
+				while (actions.back().getData() == ",") {
+					actions.pop_back();
+					parameters.push_back(values.back());
+					values.pop_back();
+				}
+				reverse(values.begin(), values.end());
+				shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
+				actions.pop_back();
+				Data result = (*function)(parameters);
+				values.push_back(result);
+			}
+			if (curr_token.getData() == ",") {
+				actions.push_back(curr_token);
+			}
+		}
+		else if (curr_token.getType() == FUNCTION) {
+			actions.push_back(curr_token);
+		}
+		else {
+			throw std::invalid_argument("ERROR: unknown token type!");
+		}
+	}
+
+	if (!actions.empty() || values.size() > 1) {
+		throw std::runtime_error("ERROR: something went wrong!");
+	}
+
+	Data result = values[0];
+
+	if (result.getType() == INTEGER || result.getType() == REAL) {
+		return result;
+	}
+	if (result.getType() == INTEGER_VARIABLE || result.getType() == REAL_VARIABLE) {
+		Data result = global_memory->program_data.getData(result.getData());
+		return result;
+	}
+	if (result.getType() == VARIABLE) {
+		throw std::runtime_error("ERROR: as a result of the calculations, an uninitialized variable was obtained!");
+	}
 
 	return Data();
 }
