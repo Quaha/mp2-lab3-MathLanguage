@@ -36,7 +36,6 @@ inline real_type _stor(const std::string value) { // string to real
 
 using std::unique_ptr;
 using std::shared_ptr;
-using std::weak_ptr;
 
 using type = int;
 
@@ -58,4 +57,10 @@ enum STATUSES : type {
 
 	The space " " and "`" is a special characters, which serves as a visual text separator.
 	When processing data, it is deleted.
+
+	The space " " and "`" is a special characters, which serves as a visual text separator.
+	When processing data, it is deleted.
+
+	The colon ";" is the end of the string. After it, the line reading will end. You don't
+	have to specify it at the end of the line, it is inserted automatically
 */

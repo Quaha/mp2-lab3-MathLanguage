@@ -2,6 +2,6 @@
 
 #include "includes.h"
 
-#include "types.h"
+#include "Data.h"
 
-shared_ptr<Value> __LEFT__BRACKET__OPERATOR__(const vector<shared_ptr<Value>>& parameters);
+Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters);

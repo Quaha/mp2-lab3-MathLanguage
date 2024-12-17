@@ -6,7 +6,7 @@ template<typename DataType, typename ContainerType, typename TransitionType>
 struct PrefixTree {
 	struct Node {
 		map<TransitionType, int> next;
-		shared_ptr<DataType> data = nullptr;
+		DataType data;
 		bool is_terminal = false;
 	};
 
@@ -32,7 +32,7 @@ struct PrefixTree {
 		return (*nodes[curr_state].next.find(C)).second;
 	}
 
-	void addWord(const ContainerType& S, DataType data) {
+	void addWord(const ContainerType& S, const DataType &data) {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {
@@ -40,7 +40,7 @@ struct PrefixTree {
 			}
 			curr_state = getNextState(curr_state, C);
 		}
-		nodes[curr_state].data = std::make_shared<DataType>(data);
+		nodes[curr_state].data = data;
 		nodes[curr_state].is_terminal = true;
 	}
 
@@ -55,7 +55,7 @@ struct PrefixTree {
 		return nodes[curr_state].is_terminal;
 	}
 
-	shared_ptr<DataType> getData(const ContainerType& S) const {
+	DataType getData(const ContainerType& S) const {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {

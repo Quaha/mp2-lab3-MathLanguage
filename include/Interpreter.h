@@ -4,16 +4,13 @@
 
 #include "PrefixTree.h"
 #include "Automat.h"
-#include "types.h"
+#include "Data.h"
 
 struct Interpreter {
 
-	PrefixTree<shared_ptr<Type>, string, char> program_data;
-	PrefixTree<shared_ptr<Type>, string, char> names_information;
-
 	struct LexicalAnalyzer {
 
-		Automat tokens;
+		Automat tokens_aut;
 
 		set<char> allowed_symbols; // a...z A...Z 0...9 _ ( )
 		set<char> separating_characters; // SPACE `
@@ -22,11 +19,11 @@ struct Interpreter {
 
 		LexicalAnalyzer();
 
-		vector<shared_ptr<Type>> divideIntoTokens(const string& line) const;
+		vector<Data> divideIntoTokens(const string& line) const;
 	};
 
 	LexicalAnalyzer lexical_analyzer;
 
 	Interpreter();
-	shared_ptr<Type> execute(const string &line);
+	Data execute(const string &line);
 };

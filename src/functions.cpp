@@ -1,58 +1,31 @@
 #include "includes.h"
 
 #include "functions.h"
-#include "types.h"
+#include "Data.h"
 #include "ProgramMemory.h"
 
-vector<type> getParametersTypes(const vector<shared_ptr<Value>>& parameters) {
-
-    int N = parameters.size();
-    vector<type> parameters_types(N, NONE);
-
-    for (int i = 0; i < N; ++i) {
-        parameters_types[i] = parameters[i]->getValueType();
-    }
-
-    return parameters_types;
-}
-
-shared_ptr<Value> __LEFT__BRACKET__OPERATOR__(const vector<shared_ptr<Value>>& parameters) {
-
-	vector<type> parameters_types = getParametersTypes(parameters);
+Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters) {
 
 	if (parameters.size() != 1) {
 		throw std::invalid_argument("ERROR: invalid number of arguments!");
 	}
 
-	type current_type = parameters_types[0];
-    shared_ptr<Value> curr_ptr = parameters[0];
+    Data current_obj = parameters[0];
+    Data result;
 
-    shared_ptr<Value> result = nullptr;
-
-    if (curr_ptr.get()->getType() == INTEGER) {
-        return curr_ptr;
+    if (current_obj.getType() == INTEGER || current_obj.getType() == REAL) {
+        result = current_obj;
     }
-    if (curr_ptr.get()->getType() == REAL) {
-        return curr_ptr;
-    }
-    if (curr_ptr.get()->getType() == INTEGER_VARIABLE) {
-        shared_ptr<IntegerVariable> temp = std::dynamic_pointer_cast<IntegerVariable>(curr_ptr);
-        string name = temp.get()->name;
-
+    else if (current_obj.getType() == INTEGER_VARIABLE || current_obj.getType() == REAL_VARIABLE) {
+        string name = current_obj.getData();
         if (!global_memory->program_data.exists(name)) {
-            throw std::logic_error("ERROR: an uninitialized variable was used!");
+            throw std::invalid_argument("ERROR: using an uninitialized variable!");
         }
-        shared_ptr<Value> result = global_memory->program_data.getData(temp.get()->name);
-        return result;
+        result = global_memory->program_data.getData(name);
     }
-    if (curr_ptr.get()->getType() == REAL_VARIABLE) {
-        shared_ptr<RealVariable> temp = std::dynamic_pointer_cast<RealVariable>(curr_ptr);
-        string name = temp.get()->name;
+    else {
+        throw std::invalid_argument("ERROR: invalid argument!");
+    }
 
-        if (!global_memory->program_data.exists(name)) {
-            throw std::logic_error("ERROR: an uninitialized variable was used!");
-        }
-        shared_ptr<Value> result = global_memory->program_data.getData(temp.get()->name);
-        return result;
-    }
+    return result;
 }
