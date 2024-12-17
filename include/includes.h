@@ -6,38 +6,37 @@
 #include <map>
 #include <set>
 #include <memory>
-
-using real = long double;
-using integer = long long;
+#include <functional>
 
 using std::vector;
 using std::string;
 using std::map;
 using std::set;
 
+// Basic conversions
+
+using integer_type = long long;
+using real_type = long double;
+
+inline real_type _itor(integer_type value) { // integer to real
+	return static_cast<real_type>(value);
+}
+
+inline integer_type _rtoi(real_type value) { // real to integer
+	return static_cast<integer_type>(value);
+}
+
+inline integer_type _stoi(const std::string value) { // string to integer
+	return static_cast<integer_type>(stoll(value));
+}
+
+inline real_type _stor(const std::string value) { // string to real
+	return static_cast<real_type>(stold(value));
+}
+
 using std::unique_ptr;
 using std::shared_ptr;
 using std::weak_ptr;
-
-using function_ptr = Data(*)(const vector<shared_ptr<Data>>&);
-
-// Basic conversions
-
-inline real itor(integer value) { // integer to real
-	return static_cast<real>(value);
-}
-
-inline integer rtoi(real value) { // real to integer
-	return static_cast<integer>(value);
-}
-
-inline integer stoi(const std::string value) { // string to integer
-	return static_cast<integer>(stoll(value));
-}
-
-inline real stor(const std::string value) { // string to real
-	return static_cast<real>(stold(value));
-}
 
 using type = int;
 
@@ -46,16 +45,17 @@ enum STATUSES : type {
 	INTEGER = 1,
 	REAL = 2,
 	VARIABLE = 3,
-	FUNCTION = 4,
-	OPERAND = 5,
-	SPECIAL_SYMBOL = 6,
-	ERROR = 7,
+	INTEGER_VARIABLE = 4,
+	REAL_VARIABLE = 5,
+	FUNCTION = 6,
+	SPECIAL_SYMBOL = 7,
+	ERROR = 8,
 };
 
 /* Special Symbols:
-	The right bracket ")" is a special object, which performs the last function
+	The right bracket ")" is a special characters, which performs the last function
 	In fact, left bracket "(" is a function, which takes one number and return it
 
-	The space " " and "`" is a special characters which serves as a visual text separator.
+	The space " " and "`" is a special characters, which serves as a visual text separator.
 	When processing data, it is deleted.
 */

@@ -8,11 +8,6 @@ struct PrefixTree {
 		map<TransitionType, int> next;
 		shared_ptr<DataType> data = nullptr;
 		bool is_terminal = false;
-
-		~Node() {
-			delete data;
-			data = nullptr;
-		}
 	};
 
 	vector<Node> nodes;
@@ -37,7 +32,7 @@ struct PrefixTree {
 		return (*nodes[curr_state].next.find(C)).second;
 	}
 
-	void addWord(const ContainerType& S, DataType* data_ptr) {
+	void addWord(const ContainerType& S, DataType data) {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {
@@ -45,7 +40,7 @@ struct PrefixTree {
 			}
 			curr_state = getNextState(curr_state, C);
 		}
-		nodes[curr_state].data = data_ptr;
+		nodes[curr_state].data = std::make_shared<DataType>(data);
 		nodes[curr_state].is_terminal = true;
 	}
 
@@ -60,7 +55,7 @@ struct PrefixTree {
 		return nodes[curr_state].is_terminal;
 	}
 
-	shared_ptr<DataType> data getData(const ContainerType& S) const {
+	shared_ptr<DataType> getData(const ContainerType& S) const {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {

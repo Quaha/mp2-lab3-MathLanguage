@@ -1,72 +1,58 @@
 #include "includes.h"
 
 #include "functions.h"
-#include "Interpreter.h"
-#include "Data.h"
+#include "types.h"
+#include "ProgramMemory.h"
 
-vector<type> getParametersTypes(const vector<shared_ptr<Data>>& parameters, Interpreter& program) {
+vector<type> getParametersTypes(const vector<shared_ptr<Value>>& parameters) {
 
     int N = parameters.size();
     vector<type> parameters_types(N, NONE);
 
     for (int i = 0; i < N; ++i) {
-        type current_type = parameters[i]->getType();
-
-        if (current_type == INTEGER) {
-            parameters_types[i] = INTEGER;
-        }
-
-        else if (current_type == REAL) {
-            parameters_types[i] = REAL;
-        }
-
-        else if (current_type == VARIABLE) {
-            VariableData* variable_ptr = dynamic_cast<VariableData*>(parameters[i].get());
-            if (!program.program_data.exists(variable_ptr->name)) {
-                throw std::invalid_argument("ERROR: using an uninitialized variable!");
-            }
-
-            
-            parameters_types[i] = var_ptr->varType;
-        }
-        else {
-            throw std::invalid_argument("ERROR: invalid type!");
-        }
+        parameters_types[i] = parameters[i]->getValueType();
     }
 
     return parameters_types;
 }
 
-Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters, Interpreter& program) {
+shared_ptr<Value> __LEFT__BRACKET__OPERATOR__(const vector<shared_ptr<Value>>& parameters) {
 
-	vector<type> parameters_types = getParametersTypes(parameters, program);
-
-	Data result;
+	vector<type> parameters_types = getParametersTypes(parameters);
 
 	if (parameters.size() != 1) {
-		throw std::invalid_argument("Error in __LEFT__BRACKET__OPERATOR__: invalid number of arguments!");
+		throw std::invalid_argument("ERROR: invalid number of arguments!");
 	}
 
 	type current_type = parameters_types[0];
+    shared_ptr<Value> curr_ptr = parameters[0];
 
-	if (current_type == INTEGER) {
-		result = parameters[0];
-	}
+    shared_ptr<Value> result = nullptr;
 
-	else if (current_type == REAL) {
-		result = parameters[0];
-	}
+    if (curr_ptr.get()->getType() == INTEGER) {
+        return curr_ptr;
+    }
+    if (curr_ptr.get()->getType() == REAL) {
+        return curr_ptr;
+    }
+    if (curr_ptr.get()->getType() == INTEGER_VARIABLE) {
+        shared_ptr<IntegerVariable> temp = std::dynamic_pointer_cast<IntegerVariable>(curr_ptr);
+        string name = temp.get()->name;
 
-	else if (current_type == VARIABLE) {
-		VariableData* var_ptr = toVariableDataPtr(parameters[0]);
-		
-		type type = var_ptr->type;
-		void* ptr = copyVoidPtr(program.program_data.getData(var_ptr->name), type);
+        if (!global_memory->program_data.exists(name)) {
+            throw std::logic_error("ERROR: an uninitialized variable was used!");
+        }
+        shared_ptr<Value> result = global_memory->program_data.getData(temp.get()->name);
+        return result;
+    }
+    if (curr_ptr.get()->getType() == REAL_VARIABLE) {
+        shared_ptr<RealVariable> temp = std::dynamic_pointer_cast<RealVariable>(curr_ptr);
+        string name = temp.get()->name;
 
-		result.data_type = type;
-		result.data_ptr = ptr;
-
-	}
-
-	return result;
+        if (!global_memory->program_data.exists(name)) {
+            throw std::logic_error("ERROR: an uninitialized variable was used!");
+        }
+        shared_ptr<Value> result = global_memory->program_data.getData(temp.get()->name);
+        return result;
+    }
 }

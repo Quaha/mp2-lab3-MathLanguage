@@ -2,7 +2,6 @@
 
 #include "includes.h"
 
-#include "Interpreter.h"
-#include "Data.h"
+#include "types.h"
 
-Data __LEFT__BRACKET__OPERATOR__(const vector<shared_ptr<Data>>& parameters, Interpreter &program);
+shared_ptr<Value> __LEFT__BRACKET__OPERATOR__(const vector<shared_ptr<Value>>& parameters);

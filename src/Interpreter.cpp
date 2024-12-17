@@ -4,7 +4,8 @@
 #include "Automat.h"
 #include "Interpreter.h"
 #include "functions.h"
-#include "Data.h"
+#include "types.h"
+#include "ProgramMemory.h"
 
 void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 
@@ -62,7 +63,7 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 		analyzer.tokens.addTransition(0, 2, C);
 	}
 	for (char C : analyzer.names_symbols) {
-		analyzer.tokens.addTransition(0, 10, '0');
+		analyzer.tokens.addTransition(0, 10, C);
 	}
 	analyzer.tokens.addTransition(0, 11, '(');
 	analyzer.tokens.addTransition(0, 12, ')');
@@ -125,21 +126,21 @@ Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens(100) {
 	
 }
 
-vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) const {
+vector<shared_ptr<Type>> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) const {
 	string correct_line = "";
 	for (char C : line) {
 		if (separating_characters.count(C)) {
 			continue;
 		}
 		else if (!allowed_symbols.count(C)) {
-			throw std::runtime_error("ERROR: A forbidden symbol has been used: " + C);
+			throw std::runtime_error("ERROR: a forbidden symbol has been used!");
 		}
 		else {
 			correct_line.push_back(C);
 		}
 	}
 
-	vector<shared_ptr<Data>> result(0);
+	vector<shared_ptr<Type>> result(0);
 
 	int curr_state = 0;
 	string stack(0);
@@ -155,10 +156,13 @@ vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const st
 
 		if (next_status == ERROR) {
 			if (tokens.getStatus(curr_state) == NONE) {
-				throw std::runtime_error("ERROR: A lexical error in the following position: " + (char)curr_position);
+				throw std::runtime_error("ERROR: a lexical error!");
 			}
 			else if (tokens.getStatus(curr_state) == INTEGER){
-				
+				Integer temp = Integer(_stoi(stack));
+				shared_ptr<Integer> temp_ptr1 = std::make_shared<Integer>(temp);
+				shared_ptr<Type> temp_ptr2 = std::dynamic_pointer_cast<Type>(temp_ptr2);
+				result.push_back(temp_ptr2);
 			}
 			else if (tokens.getStatus(curr_state) == REAL) {
 				
@@ -167,9 +171,6 @@ vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const st
 				
 			}
 			else if (tokens.getStatus(curr_state) == FUNCTION) {
-
-			}
-			else if (tokens.getStatus(curr_state) == OPERAND) {
 
 			}
 			else if (tokens.getStatus(curr_state) == SPECIAL_SYMBOL) {
@@ -181,6 +182,7 @@ vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const st
 			else {
 				throw std::runtime_error("ERROR: unknown type in lexical analyzer!");
 			}
+			stack.clear();
 		}
 		else {
 			curr_state = next_state;
@@ -191,10 +193,15 @@ vector<shared_ptr<Data>> Interpreter::LexicalAnalyzer::divideIntoTokens(const st
 }
 
 Interpreter::Interpreter() {
+	global_memory = std::make_unique<MemoryManager>();
+
+
 
 }
 
-shared_ptr<Data> Interpreter::execute(const string& line) {
+shared_ptr<Type> Interpreter::execute(const string& line) {
 
-	return shared_ptr<Data>();
+	vector<shared_ptr<Type>> tokens = lexical_analyzer.divideIntoTokens(line);
+
+	return shared_ptr<Type>();
 }
