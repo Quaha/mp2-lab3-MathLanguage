@@ -16,6 +16,7 @@ struct Automat {
 
 	bool nextStateExist(int curr_state, char C) const;
 	void createNextState(int curr_state, char C, type status);
+	bool transitionExists(int curr_state, char C) const;
 
 	void createNewState(type status);
 	void setStateStatus(int curr_state, type status);

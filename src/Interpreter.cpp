@@ -25,6 +25,13 @@ void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.allowed_symbols.insert(';');
 	analyzer.allowed_symbols.insert(',');
 
+	analyzer.allowed_symbols.insert('+');
+	analyzer.allowed_symbols.insert('-');
+	analyzer.allowed_symbols.insert('*');
+	analyzer.allowed_symbols.insert('/');
+
+	analyzer.allowed_symbols.insert('.');
+
 	// Degits symbols
 	for (char C = '0'; C <= '9'; ++C) {
 		analyzer.digits_symbols.insert(C);
@@ -42,6 +49,12 @@ void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 	// Separating symbols (They are not counted among the allowed ones)
 	analyzer.separating_characters.insert(' ');
 	analyzer.separating_characters.insert('`');
+
+	// Operators symbols
+	analyzer.operators_symbols.insert('+');
+	analyzer.operators_symbols.insert('-');
+	analyzer.operators_symbols.insert('*');
+	analyzer.operators_symbols.insert('/');
 }
 
 void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
@@ -53,9 +66,14 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 
 	analyzer.tokens_aut.setStateStatus(2, INTEGER); // other integer
 
+	analyzer.tokens_aut.setStateStatus(4, NONE); // after number point
+	analyzer.tokens_aut.setStateStatus(5, REAL); // real number point
+
 	analyzer.tokens_aut.setStateStatus(10, VARIABLE); // variable
 	analyzer.tokens_aut.setStateStatus(11, FUNCTION); // function
 	analyzer.tokens_aut.setStateStatus(12, SPECIAL_SYMBOL); // special_symbol
+
+	analyzer.tokens_aut.setStateStatus(15, OPERATOR); // operator
 
 	analyzer.tokens_aut.setStateStatus(99, ERROR); // global error
 
@@ -73,10 +91,12 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.tokens_aut.addTransition(0, 12, ';');
 	analyzer.tokens_aut.addTransition(0, 12, ',');
 
-	// Zero integer
-	for (char C : analyzer.allowed_symbols) {
-		analyzer.tokens_aut.addTransition(1, 99, C);
+	for (char C : analyzer.operators_symbols) {
+		analyzer.tokens_aut.addTransition(0, 15, C);
 	}
+
+	// Zero integer
+	analyzer.tokens_aut.addTransition(1, 4, '.');
 
 
 	// Other integer
@@ -84,11 +104,19 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 		if (analyzer.digits_symbols.count(C)) {
 			analyzer.tokens_aut.addTransition(2, 2, C);
 		}
-		else {
-			analyzer.tokens_aut.addTransition(2, 99, C);
-		}
+	}
+	analyzer.tokens_aut.addTransition(2, 4, '.');
+
+
+	// after point
+	for (char C : analyzer.digits_symbols) {
+		analyzer.tokens_aut.addTransition(4, 5, C);
 	}
 
+	// real
+	for (char C : analyzer.digits_symbols) {
+		analyzer.tokens_aut.addTransition(5, 5, C);
+	}
 
 	// Variable
 	for (char C : analyzer.allowed_symbols) {
@@ -98,28 +126,31 @@ void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
 		else if (C == '(') {
 			analyzer.tokens_aut.addTransition(10, 11, C);
 		}
-		else {
-			analyzer.tokens_aut.addTransition(10, 99, C);
-		}
 	}
 
 
 	// Function
-	for (char C : analyzer.allowed_symbols) {
-		analyzer.tokens_aut.addTransition(11, 99, C);
-	}
-
+	//empty
 
 	// Special_symbol
-	for (char C : analyzer.allowed_symbols) {
-		analyzer.tokens_aut.addTransition(12, 99, C);
-	}
+	//empty
 
+	// Operator
+	//empty
 
 	// Global error
-	for (char C : analyzer.allowed_symbols) {
-		analyzer.tokens_aut.addTransition(99, 99, C);
+	//empty
+
+
+	// General errors transitions
+	for (int i = 0; i < analyzer.tokens_aut.nodes.size(); i++) {
+		for (char C : analyzer.allowed_symbols) {
+			if (!analyzer.tokens_aut.transitionExists(i, C)) {
+				analyzer.tokens_aut.addTransition(i, 99, C);
+			}
+		}
 	}
+
 }
 
 Interpreter::LexicalAnalyzer::LexicalAnalyzer(): tokens_aut(100) {
@@ -163,7 +194,8 @@ vector<Data> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) 
 			}
 			else if (curr_status == INTEGER ||
 					 curr_status == REAL ||
-					 curr_status == SPECIAL_SYMBOL){
+					 curr_status == SPECIAL_SYMBOL ||
+					 curr_status == OPERATOR){
 				
 				tokens.push_back(Data(curr_status, stack));
 			}
@@ -214,9 +246,46 @@ vector<Data> Interpreter::LexicalAnalyzer::divideIntoTokens(const string& line) 
 	return tokens;
 }
 
+Interpreter::SerialAnalyzer::SerialAnalyzer() {
+
+	allowed.resize(STATUSES_COUNT);
+	for (int i = 0; i < STATUSES_COUNT; i++) {
+		allowed[i].resize(STATUSES_COUNT, true);
+	}
+
+	vector<type> values_statuses = { INTEGER, REAL, INTEGER_VARIABLE, REAL_VARIABLE, VARIABLE };
+	for (int i = 0; i < values_statuses.size(); i++) {
+		for (int j = 0; j < values_statuses.size(); j++) {
+			allowed[i][j] = false;
+		}
+	}
+}
+
+void Interpreter::SerialAnalyzer::checkTokens(const vector<Data>& tokens) const {
+	for (int i = 0; i < (int)tokens.size() - 1; i++) {
+		if (!allowed[tokens[i].getType()][tokens[i + 1].getType()]) {
+			throw std::runtime_error("ERROR: wrong sequence of tokens!");
+		}
+	}
+}
+
 void processFunctionData() {
 	global_memory->function_data.addWord("(", std::make_shared<function_type>(__LEFT__BRACKET__OPERATOR__));
 	global_memory->function_data.addWord("sum(", std::make_shared<function_type>(sum));
+	global_memory->function_data.addWord("+", std::make_shared<function_type>(__PLUS__OPERATOR__));
+	global_memory->function_data.addWord("-", std::make_shared<function_type>(__MINUS__OPERATOR__));
+	global_memory->function_data.addWord("*", std::make_shared<function_type>(__MULTIPLY__OPERATOR__));
+	global_memory->function_data.addWord("/", std::make_shared<function_type>(__DIVISION__OPERATOR__));
+
+	global_memory->objects_priority.addWord("(", 0);
+	global_memory->objects_priority.addWord("sum(", 0);
+	global_memory->objects_priority.addWord("+", 100);
+	global_memory->objects_priority.addWord("-", 100);
+	global_memory->objects_priority.addWord("*", 200);
+	global_memory->objects_priority.addWord("/", 200);
+
+	global_memory->objects_priority.addWord(")", -100);
+	global_memory->objects_priority.addWord(",", -100);
 }
 
 Interpreter::Interpreter() {
@@ -226,9 +295,38 @@ Interpreter::Interpreter() {
 
 }
 
+void perform_stack(vector<Data>& values, vector<Data>& actions, vector<int>& stack_of_priorities, vector<int>& stack_of_counts, int curr_p) {
+	while (!stack_of_priorities.empty() && stack_of_priorities.back() >= curr_p && !actions.empty() && actions.back().getType() == OPERATOR) {
+		shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
+		actions.pop_back();
+
+		vector<Data> parameters(0);
+		parameters.push_back(values.back());
+		values.pop_back();
+		stack_of_counts.back()--;
+
+		if (stack_of_counts.back() < 0) {
+			throw std::logic_error("ERROR: something went wrong!");
+		}
+
+		if (stack_of_counts.back() > 0) {
+			parameters.push_back(values.back());
+			values.pop_back();
+			stack_of_counts.back()--;
+		}
+
+		reverse(parameters.begin(), parameters.end());
+
+		Data res = (*function)(parameters);
+		values.push_back(res);
+		stack_of_counts.back()++;
+	}
+}
+
 Data Interpreter::execute(const string& line) {
 
 	vector<Data> tokens = lexical_analyzer.divideIntoTokens(line);
+	serial_analyzer.checkTokens(tokens);
 
 	//for (int i = 0; i < tokens.size(); i++) {
 	//	std::cout << tokens[i].getType() << " " << tokens[i].getData() << '\n';
@@ -236,43 +334,72 @@ Data Interpreter::execute(const string& line) {
 
 	vector<Data> values(0);
 	vector<Data> actions(0);
+	vector<int> stack_of_priorities(0);
+	vector<int> stack_of_counts(1, 0);
 
 	for (int i = 0; i < tokens.size(); i++) {
+
 		Data curr_token = tokens[i];
+
 		if (curr_token.getType() == INTEGER ||
 			curr_token.getType() == REAL ||
 			curr_token.getType() == VARIABLE ||
 			curr_token.getType() == INTEGER_VARIABLE ||
 			curr_token.getType() == REAL_VARIABLE) {
 			values.push_back(curr_token);
+			stack_of_counts.back()++;
 		}
+
 		else if (curr_token.getType() == SPECIAL_SYMBOL) {
+			int curr_priority = global_memory->objects_priority.getData(curr_token.getData());
+			perform_stack(values, actions, stack_of_priorities, stack_of_counts, curr_priority);
+			stack_of_priorities.push_back(curr_priority);
+
 			if (curr_token.getData() == ")") {
 				vector<Data> parameters(0);
 				parameters.push_back(values.back());
 				values.pop_back();
+				stack_of_counts.pop_back();
 				while (actions.back().getData() == ",") {
 					actions.pop_back();
 					parameters.push_back(values.back());
 					values.pop_back();
+					stack_of_counts.pop_back();
+					stack_of_priorities.pop_back();
 				}
-				reverse(values.begin(), values.end());
+				reverse(parameters.begin(), parameters.end());
 				shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
 				actions.pop_back();
 				Data result = (*function)(parameters);
 				values.push_back(result);
+				stack_of_counts.back()++;
 			}
 			if (curr_token.getData() == ",") {
 				actions.push_back(curr_token);
+				stack_of_counts.push_back(0);
 			}
 		}
+
 		else if (curr_token.getType() == FUNCTION) {
+			int curr_priority = global_memory->objects_priority.getData(curr_token.getData());
+			stack_of_priorities.push_back(curr_priority);
+			stack_of_counts.push_back(0);
 			actions.push_back(curr_token);
 		}
+
+		else if (curr_token.getType() == OPERATOR) {
+			int curr_priority = global_memory->objects_priority.getData(curr_token.getData());
+			perform_stack(values, actions, stack_of_priorities, stack_of_counts, curr_priority);
+			stack_of_priorities.push_back(curr_priority);
+			actions.push_back(curr_token);
+		}
+
 		else {
 			throw std::invalid_argument("ERROR: unknown token type!");
 		}
 	}
+
+	perform_stack(values, actions, stack_of_priorities, stack_of_counts, -1000);
 
 	if (!actions.empty() || values.size() > 1) {
 		throw std::runtime_error("ERROR: something went wrong!");

@@ -4,41 +4,11 @@
 #include "Data.h"
 #include "ProgramMemory.h"
 
-Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters) {
+vector<Data> getValues(const vector<Data>& parameters, int start_pos = 0) {
 
-	if (parameters.size() != 1) {
-		throw std::invalid_argument("ERROR: invalid number of arguments!");
-	}
-
-    Data current_obj = parameters[0];
-    Data result;
-
-    if (current_obj.getType() == INTEGER || current_obj.getType() == REAL) {
-        result = current_obj;
-    }
-    else if (current_obj.getType() == INTEGER_VARIABLE || current_obj.getType() == REAL_VARIABLE) {
-        string name = current_obj.getData();
-        if (!global_memory->program_data.exists(name)) {
-            throw std::invalid_argument("ERROR: using an uninitialized variable!");
-        }
-        result = global_memory->program_data.getData(name);
-    }
-    else {
-        throw std::invalid_argument("ERROR: invalid argument!");
-    }
-
-    return result;
-}
-
-Data sum(const vector<Data>& parameters) {
-    if (parameters.size() == 0) {
-        throw std::invalid_argument("ERROR: invalid number of arguments!");
-    }
-
-    Data result;
     bool is_real = false;
 
-    for (int i = 0; i < parameters.size(); i++) {
+    for (int i = start_pos; i < parameters.size(); i++) {
         if (parameters[i].getType() == REAL || parameters[i].getType() == REAL_VARIABLE) {
             is_real = true;
         }
@@ -47,37 +17,178 @@ Data sum(const vector<Data>& parameters) {
         }
     }
 
-    if (is_real) {
-        result.data_type = REAL;
-        real_type value = 0;
+    vector<Data> values(parameters.size());
 
-        for (int i = 0; i < parameters.size(); i++) {
+    if (is_real) {
+        for (int i = start_pos; i < parameters.size(); i++) {
+            real_type temp;
             if (parameters[i].getType() == REAL || parameters[i].getType() == INTEGER) {
-                value += _stor(parameters[i].getData());
+                temp = _stor(parameters[i].getData());
             }
             else {
                 string name = parameters[i].getData();
-                value += _stor(global_memory->program_data.getData(name).getData());
+                temp = _stor(global_memory->program_data.getData(name).getData());
             }
+            values[i].data_type = REAL;
+            values[i].data = _rtos(temp);
         }
-
-        result.data = _itor(value);
     }
     else {
-        result.data_type = INTEGER;
-        integer_type value = 0;
-
-        for (int i = 0; i < parameters.size(); i++) {
+        for (int i = start_pos; i < parameters.size(); i++) {
+            integer_type temp;
             if (parameters[i].getType() == INTEGER) {
-                value += _stoi(parameters[i].getData());
+                temp = _stoi(parameters[i].getData());
             }
             else {
                 string name = parameters[i].getData();
-                value += _stoi(global_memory->program_data.getData(name).getData());
+                temp = _stoi(global_memory->program_data.getData(name).getData());
             }
+            values[i].data_type = INTEGER;
+            values[i].data = _itos(temp);
         }
-
-        result.data = _itos(value);
     }
+    return values;
+}
+
+Data __LEFT__BRACKET__OPERATOR__(const vector<Data>& parameters) {
+
+	if (parameters.size() != 1) {
+		throw std::invalid_argument("ERROR: invalid number of arguments!");
+	}
+
+    vector<Data> values = getValues(parameters);
+    return values[0];
+}
+
+Data __PLUS__OPERATOR__(const vector<Data>& parameters) {
+    if (parameters.size() == 0 || parameters.size() > 2) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters);
+
+    if (values[0].getType() == REAL) {
+        if (parameters.size() == 1) {
+            return values[0];
+        }
+        if (parameters.size() == 2) {
+            Data result;
+            result.data_type = REAL;
+            result.data = _rtos(_stor(values[0].getData()) + _stor(values[1].getData()));
+            return result;
+        }
+    }
+    if (values[0].getType() == INTEGER) {
+        if (parameters.size() == 1) {
+            return values[0];
+        }
+        if (parameters.size() == 2) {
+            Data result;
+            result.data_type = INTEGER;
+            result.data = _itos(_stoi(values[0].getData()) + _stoi(values[1].getData()));
+            return result;
+        }
+    }
+    throw std::invalid_argument("ERROR: something went wrong!");
+}
+
+Data __MINUS__OPERATOR__(const vector<Data>& parameters) {
+    if (parameters.size() == 0 || parameters.size() > 2) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters);
+
+    if (values[0].getType() == REAL) {
+        if (parameters.size() == 1) {
+            Data result = values[0];
+            result.data = _rtos(-_stor(result.data));
+            return result;
+        }
+        if (parameters.size() == 2) {
+            Data result;
+            result.data_type = REAL;
+            result.data = _rtos(_stor(values[0].getData()) - _stor(values[1].getData()));
+            return result;
+        }
+    }
+    if (values[0].getType() == INTEGER) {
+        if (parameters.size() == 1) {
+            Data result = values[0];
+            result.data = _itos(-_stoi(result.data));
+            return result;
+        }
+        if (parameters.size() == 2) {
+            Data result;
+            result.data_type = INTEGER;
+            result.data = _itos(_stoi(values[0].getData()) - _stoi(values[1].getData()));
+            return result;
+        }
+    }
+    throw std::invalid_argument("ERROR: something went wrong!");
+}
+
+Data __MULTIPLY__OPERATOR__(const vector<Data>& parameters) {
+    if (parameters.size() != 2) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters);
+
+    if (values[0].getType() == REAL) {
+        Data result;
+        result.data_type = REAL;
+        result.data = _rtos(_stor(values[0].getData()) * _stor(values[1].getData()));
+        return result;
+    }
+    if (values[0].getType() == INTEGER) {
+        Data result;
+        result.data_type = INTEGER;
+        result.data = _itos(_stoi(values[0].getData()) * _stoi(values[1].getData()));
+        return result;
+    }
+    throw std::invalid_argument("ERROR: something went wrong!");
+}
+
+Data __DIVISION__OPERATOR__(const vector<Data>& parameters) {
+    if (parameters.size() != 2) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters);
+    values[0].makeReal();
+    values[1].makeReal();
+
+    Data result;
+    result.data_type = REAL;
+    result.data = _rtos(_stor(values[0].getData()) / _stor(values[1].getData()));
+    return result;
+}
+
+Data sum(const vector<Data>& parameters) {
+    if (parameters.size() == 0) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters);
+
+    Data result;
+    result.data_type = values[0].getType();
+
+    if (result.getType() == REAL) {
+        real_type temp = 0;
+        for (int i = 0; i < values.size(); i++) {
+            temp += _stor(values[i].getData());
+        }
+        result.data = _rtos(temp);
+    }
+    if (result.getType() == INTEGER) {
+        integer_type temp = 0;
+        for (int i = 0; i < values.size(); i++) {
+            temp += _stoi(values[i].getData());
+        }
+        result.data = _itos(temp);
+    }
+
     return result;
 }

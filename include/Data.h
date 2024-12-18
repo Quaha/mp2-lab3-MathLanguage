@@ -16,4 +16,22 @@ struct Data {
     string getData() const {
         return data;
     }
+
+    void makeInteger() {
+        if (data_type == INTEGER || data_type == REAL) {
+            data = _itos(_stoi(data));
+        }
+        else {
+            throw std::logic_error("ERROR: this type is not a number!");
+        }
+    }
+
+    void makeReal() {
+        if (data_type == INTEGER || data_type == REAL) {
+            data = _rtos(_stor(data));
+        }
+        else {
+            throw std::logic_error("ERROR: this type is not a number!");
+        }
+    }
 };

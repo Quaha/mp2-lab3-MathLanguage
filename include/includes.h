@@ -64,7 +64,10 @@ enum STATUSES : type {
 	FUNCTION = 6,
 	SPECIAL_SYMBOL = 7,
 	ERROR = 8,
+	OPERATOR = 9
 };
+
+const int STATUSES_COUNT = 10;
 
 /* Special Symbols:
 	The right bracket ")" is a special characters, which performs the last function

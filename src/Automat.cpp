@@ -21,6 +21,10 @@ void Automat::createNextState(int curr_state, char C, type status) {
 	nodes.push_back(Node(status));
 }
 
+bool Automat::transitionExists(int curr_state, char C) const {
+	return nodes[curr_state].next.count(C);
+}
+
 void Automat::createNewState(type status) {
 	nodes.push_back(Node(status));
 }
