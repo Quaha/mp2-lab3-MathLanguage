@@ -32,7 +32,7 @@ struct PrefixTree {
 		return (*nodes[curr_state].next.find(C)).second;
 	}
 
-	void addWord(const ContainerType& S, const DataType &data) {
+	void setWord(const ContainerType& S, const DataType &data) {
 		int curr_state = 0;
 		for (TransitionType C : S) {
 			if (!nextStateExist(curr_state, C)) {

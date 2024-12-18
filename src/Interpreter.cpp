@@ -29,6 +29,7 @@ void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.allowed_symbols.insert('-');
 	analyzer.allowed_symbols.insert('*');
 	analyzer.allowed_symbols.insert('/');
+	analyzer.allowed_symbols.insert('=');
 
 	analyzer.allowed_symbols.insert('.');
 
@@ -55,6 +56,7 @@ void processTypesOfSymbols(Interpreter::LexicalAnalyzer& analyzer) {
 	analyzer.operators_symbols.insert('-');
 	analyzer.operators_symbols.insert('*');
 	analyzer.operators_symbols.insert('/');
+	analyzer.operators_symbols.insert('=');
 }
 
 void buildLexicalAnalyzerAutomat(Interpreter::LexicalAnalyzer& analyzer) {
@@ -270,22 +272,24 @@ void Interpreter::SerialAnalyzer::checkTokens(const vector<Data>& tokens) const 
 }
 
 void processFunctionData() {
-	global_memory->function_data.addWord("(", std::make_shared<function_type>(__LEFT__BRACKET__OPERATOR__));
-	global_memory->function_data.addWord("sum(", std::make_shared<function_type>(sum));
-	global_memory->function_data.addWord("+", std::make_shared<function_type>(__PLUS__OPERATOR__));
-	global_memory->function_data.addWord("-", std::make_shared<function_type>(__MINUS__OPERATOR__));
-	global_memory->function_data.addWord("*", std::make_shared<function_type>(__MULTIPLY__OPERATOR__));
-	global_memory->function_data.addWord("/", std::make_shared<function_type>(__DIVISION__OPERATOR__));
+	global_memory->function_data.setWord("(", std::make_shared<function_type>(__LEFT__BRACKET__OPERATOR__));
+	global_memory->function_data.setWord("sum(", std::make_shared<function_type>(sum));
+	global_memory->function_data.setWord("+", std::make_shared<function_type>(__PLUS__OPERATOR__));
+	global_memory->function_data.setWord("-", std::make_shared<function_type>(__MINUS__OPERATOR__));
+	global_memory->function_data.setWord("*", std::make_shared<function_type>(__MULTIPLY__OPERATOR__));
+	global_memory->function_data.setWord("/", std::make_shared<function_type>(__DIVISION__OPERATOR__));
+	global_memory->function_data.setWord("=", std::make_shared<function_type>(__EQUAL__OPERATOR__));
 
-	global_memory->objects_priority.addWord("(", 0);
-	global_memory->objects_priority.addWord("sum(", 0);
-	global_memory->objects_priority.addWord("+", 100);
-	global_memory->objects_priority.addWord("-", 100);
-	global_memory->objects_priority.addWord("*", 200);
-	global_memory->objects_priority.addWord("/", 200);
+	global_memory->objects_priority.setWord("(", 0);
+	global_memory->objects_priority.setWord("sum(", 0);
+	global_memory->objects_priority.setWord("+", 100);
+	global_memory->objects_priority.setWord("-", 100);
+	global_memory->objects_priority.setWord("*", 200);
+	global_memory->objects_priority.setWord("/", 200);
+	global_memory->objects_priority.setWord("=", -100);
 
-	global_memory->objects_priority.addWord(")", -100);
-	global_memory->objects_priority.addWord(",", -100);
+	global_memory->objects_priority.setWord(")", -100);
+	global_memory->objects_priority.setWord(",", -100);
 }
 
 Interpreter::Interpreter() {
@@ -411,8 +415,8 @@ Data Interpreter::execute(const string& line) {
 		return result;
 	}
 	if (result.getType() == INTEGER_VARIABLE || result.getType() == REAL_VARIABLE) {
-		Data result = global_memory->program_data.getData(result.getData());
-		return result;
+		Data temp = global_memory->program_data.getData(result.getData());
+		return temp;
 	}
 	if (result.getType() == VARIABLE) {
 		throw std::runtime_error("ERROR: as a result of the calculations, an uninitialized variable was obtained!");

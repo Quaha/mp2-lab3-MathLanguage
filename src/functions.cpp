@@ -17,16 +17,17 @@ vector<Data> getValues(const vector<Data>& parameters, int start_pos = 0) {
         }
     }
 
-    vector<Data> values(parameters.size());
+    vector<Data> values(std::max((int)parameters.size() - start_pos, 0));
 
     if (is_real) {
-        for (int i = start_pos; i < parameters.size(); i++) {
+        for (int j = start_pos; j < parameters.size(); j++) {
+            int i = j - start_pos;
             real_type temp;
-            if (parameters[i].getType() == REAL || parameters[i].getType() == INTEGER) {
-                temp = _stor(parameters[i].getData());
+            if (parameters[j].getType() == REAL || parameters[j].getType() == INTEGER) {
+                temp = _stor(parameters[j].getData());
             }
             else {
-                string name = parameters[i].getData();
+                string name = parameters[j].getData();
                 temp = _stor(global_memory->program_data.getData(name).getData());
             }
             values[i].data_type = REAL;
@@ -34,13 +35,14 @@ vector<Data> getValues(const vector<Data>& parameters, int start_pos = 0) {
         }
     }
     else {
-        for (int i = start_pos; i < parameters.size(); i++) {
+        for (int j = start_pos; j < parameters.size(); j++) {
+            int i = j - start_pos;
             integer_type temp;
-            if (parameters[i].getType() == INTEGER) {
-                temp = _stoi(parameters[i].getData());
+            if (parameters[j].getType() == INTEGER) {
+                temp = _stoi(parameters[j].getData());
             }
             else {
-                string name = parameters[i].getData();
+                string name = parameters[j].getData();
                 temp = _stoi(global_memory->program_data.getData(name).getData());
             }
             values[i].data_type = INTEGER;
@@ -163,6 +165,23 @@ Data __DIVISION__OPERATOR__(const vector<Data>& parameters) {
     result.data_type = REAL;
     result.data = _rtos(_stor(values[0].getData()) / _stor(values[1].getData()));
     return result;
+}
+
+Data __EQUAL__OPERATOR__(const vector<Data>& parameters) {
+    if (parameters.size() != 2) {
+        throw std::invalid_argument("ERROR: invalid number of arguments!");
+    }
+
+    vector<Data> values = getValues(parameters, 1);
+
+    string name = parameters[0].getData();
+    if (parameters[0].getType() != VARIABLE && parameters[0].getType() != REAL_VARIABLE && parameters[0].getType() != INTEGER_VARIABLE) {
+        throw std::invalid_argument("ERROR: value can only be assigned to a number!");
+    }
+
+    global_memory->program_data.setWord(name, values[0]);
+
+    return Data();
 }
 
 Data sum(const vector<Data>& parameters) {

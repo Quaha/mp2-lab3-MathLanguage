@@ -14,4 +14,6 @@ Data __MULTIPLY__OPERATOR__(const vector<Data>& parameters);
 
 Data __DIVISION__OPERATOR__(const vector<Data>& parameters);
 
+Data __EQUAL__OPERATOR__(const vector<Data>& parameters);
+
 Data sum(const vector<Data>& parameters);
