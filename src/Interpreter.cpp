@@ -261,6 +261,8 @@ Interpreter::SerialAnalyzer::SerialAnalyzer() {
 			allowed[i][j] = false;
 		}
 	}
+
+	allowed[OPERATOR][OPERATOR] = false;
 }
 
 void Interpreter::SerialAnalyzer::checkTokens(const vector<Data>& tokens) const {
