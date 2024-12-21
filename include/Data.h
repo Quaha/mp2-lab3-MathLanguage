@@ -35,3 +35,7 @@ struct Data {
         }
     }
 };
+
+Data convertToValue(Data data);
+Data convertToInteger(Data data);
+Data convertToReal(Data data);

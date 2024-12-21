@@ -263,6 +263,11 @@ Interpreter::SerialAnalyzer::SerialAnalyzer() {
 	}
 
 	allowed[OPERATOR][OPERATOR] = false;
+
+	for (int i = 0; i < values_statuses.size(); i++) {
+		allowed[i][FUNCTION] = false;
+	}
+
 }
 
 void Interpreter::SerialAnalyzer::checkTokens(const vector<Data>& tokens) const {
@@ -307,8 +312,18 @@ void perform_stack(vector<Data>& values, vector<Data>& actions, vector<int>& sta
 		actions.pop_back();
 
 		vector<Data> parameters(0);
+
+		if (values.empty()) {
+			throw std::runtime_error("ERROR: incorrect input!");
+		}
+
 		parameters.push_back(values.back());
 		values.pop_back();
+
+		if (stack_of_counts.empty()) {
+			throw std::runtime_error("ERROR: incorrect input!");
+		}
+
 		stack_of_counts.back()--;
 
 		if (stack_of_counts.back() < 0) {
@@ -334,10 +349,6 @@ Data Interpreter::execute(const string& line) {
 	vector<Data> tokens = lexical_analyzer.divideIntoTokens(line);
 	serial_analyzer.checkTokens(tokens);
 
-	//for (int i = 0; i < tokens.size(); i++) {
-	//	std::cout << tokens[i].getType() << " " << tokens[i].getData() << '\n';
-	//}
-
 	vector<Data> values(0);
 	vector<Data> actions(0);
 	vector<int> stack_of_priorities(0);
@@ -353,6 +364,11 @@ Data Interpreter::execute(const string& line) {
 			curr_token.getType() == INTEGER_VARIABLE ||
 			curr_token.getType() == REAL_VARIABLE) {
 			values.push_back(curr_token);
+
+			if (stack_of_counts.empty()) {
+				throw std::runtime_error("ERROR: incorrect input!");
+			}
+
 			stack_of_counts.back()++;
 		}
 
@@ -363,17 +379,44 @@ Data Interpreter::execute(const string& line) {
 
 			if (curr_token.getData() == ")") {
 				vector<Data> parameters(0);
+
+				if (values.empty()) {
+					throw std::runtime_error("ERROR: incorrect input!");
+				}
+				if (stack_of_counts.empty()) {
+					throw std::runtime_error("ERROR: incorrect input!");
+				}
+				if (actions.empty()) {
+					throw std::runtime_error("ERROR: incorrect input!");
+				}
+
 				parameters.push_back(values.back());
 				values.pop_back();
 				stack_of_counts.pop_back();
 				while (actions.back().getData() == ",") {
 					actions.pop_back();
+
+					if (values.empty()) {
+						throw std::runtime_error("ERROR: incorrect input!");
+					}
+					if (stack_of_counts.empty()) {
+						throw std::runtime_error("ERROR: incorrect input!");
+					}
+					if (actions.empty()) {
+						throw std::runtime_error("ERROR: incorrect input!");
+					}
+
 					parameters.push_back(values.back());
 					values.pop_back();
 					stack_of_counts.pop_back();
 					stack_of_priorities.pop_back();
 				}
 				reverse(parameters.begin(), parameters.end());
+
+				if (actions.empty()) {
+					throw std::runtime_error("ERROR: incorrect input!");
+				}
+
 				shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
 				actions.pop_back();
 				Data result = (*function)(parameters);
@@ -407,22 +450,10 @@ Data Interpreter::execute(const string& line) {
 
 	perform_stack(values, actions, stack_of_priorities, stack_of_counts, -1000);
 
-	if (!actions.empty() || values.size() > 1) {
+	if (!actions.empty() || values.size() != 1) {
 		throw std::runtime_error("ERROR: something went wrong!");
 	}
 
-	Data result = values[0];
-
-	if (result.getType() == INTEGER || result.getType() == REAL) {
-		return result;
-	}
-	if (result.getType() == INTEGER_VARIABLE || result.getType() == REAL_VARIABLE) {
-		Data temp = global_memory->program_data.getData(result.getData());
-		return temp;
-	}
-	if (result.getType() == VARIABLE) {
-		throw std::runtime_error("ERROR: as a result of the calculations, an uninitialized variable was obtained!");
-	}
-
+	return convertToValue(values[0]);
 	return Data();
 }

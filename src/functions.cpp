@@ -9,46 +9,23 @@ vector<Data> getValues(const vector<Data>& parameters, int start_pos = 0) {
     bool is_real = false;
 
     for (int i = start_pos; i < parameters.size(); i++) {
-        if (parameters[i].getType() == REAL || parameters[i].getType() == REAL_VARIABLE) {
+        Data temp = convertToValue(parameters[i]);
+        if (temp.getType() == REAL) {
             is_real = true;
-        }
-        if (parameters[i].getType() == VARIABLE) {
-            throw std::invalid_argument("ERROR: using an uninitialized variable!");
         }
     }
 
     vector<Data> values(std::max((int)parameters.size() - start_pos, 0));
 
-    if (is_real) {
-        for (int j = start_pos; j < parameters.size(); j++) {
-            int i = j - start_pos;
-            real_type temp;
-            if (parameters[j].getType() == REAL || parameters[j].getType() == INTEGER) {
-                temp = _stor(parameters[j].getData());
-            }
-            else {
-                string name = parameters[j].getData();
-                temp = _stor(global_memory->program_data.getData(name).getData());
-            }
-            values[i].data_type = REAL;
-            values[i].data = _rtos(temp);
+    for (int j = start_pos; j < parameters.size(); j++) {
+        int i = j - start_pos;
+        values[i] = convertToValue(parameters[j]);
+
+        if (is_real && values[i].getType() == INTEGER) {
+            values[i] = convertToReal(values[i]);
         }
     }
-    else {
-        for (int j = start_pos; j < parameters.size(); j++) {
-            int i = j - start_pos;
-            integer_type temp;
-            if (parameters[j].getType() == INTEGER) {
-                temp = _stoi(parameters[j].getData());
-            }
-            else {
-                string name = parameters[j].getData();
-                temp = _stoi(global_memory->program_data.getData(name).getData());
-            }
-            values[i].data_type = INTEGER;
-            values[i].data = _itos(temp);
-        }
-    }
+
     return values;
 }
 
@@ -181,7 +158,7 @@ Data __EQUAL__OPERATOR__(const vector<Data>& parameters) {
 
     global_memory->program_data.setWord(name, values[0]);
 
-    return Data();
+    return values[0];
 }
 
 Data sum(const vector<Data>& parameters) {
