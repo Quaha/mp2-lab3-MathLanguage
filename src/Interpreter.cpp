@@ -310,6 +310,7 @@ void perform_stack(vector<Data>& values, vector<Data>& actions, vector<int>& sta
 	while (!stack_of_priorities.empty() && stack_of_priorities.back() >= curr_p && !actions.empty() && actions.back().getType() == OPERATOR) {
 		shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
 		actions.pop_back();
+		stack_of_priorities.pop_back();
 
 		vector<Data> parameters(0);
 
@@ -358,6 +359,10 @@ Data Interpreter::execute(const string& line) {
 
 		Data curr_token = tokens[i];
 
+		if (curr_token.data == ")") {
+			int b = 4;
+		}
+
 		if (curr_token.getType() == INTEGER ||
 			curr_token.getType() == REAL ||
 			curr_token.getType() == VARIABLE ||
@@ -375,7 +380,6 @@ Data Interpreter::execute(const string& line) {
 		else if (curr_token.getType() == SPECIAL_SYMBOL) {
 			int curr_priority = global_memory->objects_priority.getData(curr_token.getData());
 			perform_stack(values, actions, stack_of_priorities, stack_of_counts, curr_priority);
-			stack_of_priorities.push_back(curr_priority);
 
 			if (curr_token.getData() == ")") {
 				vector<Data> parameters(0);
@@ -419,12 +423,14 @@ Data Interpreter::execute(const string& line) {
 
 				shared_ptr<function_type> function = global_memory->function_data.getData(actions.back().getData());
 				actions.pop_back();
+				stack_of_priorities.pop_back();
 				Data result = (*function)(parameters);
 				values.push_back(result);
 				stack_of_counts.back()++;
 			}
 			if (curr_token.getData() == ",") {
 				actions.push_back(curr_token);
+				stack_of_priorities.push_back(curr_priority);
 				stack_of_counts.push_back(0);
 			}
 		}
@@ -439,6 +445,9 @@ Data Interpreter::execute(const string& line) {
 		else if (curr_token.getType() == OPERATOR) {
 			int curr_priority = global_memory->objects_priority.getData(curr_token.getData());
 			perform_stack(values, actions, stack_of_priorities, stack_of_counts, curr_priority);
+			if (stack_of_counts.back() == 0) {
+				curr_priority = 1000;
+			}
 			stack_of_priorities.push_back(curr_priority);
 			actions.push_back(curr_token);
 		}

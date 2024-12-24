@@ -129,3 +129,13 @@ TEST(Interpreter, OperationWithBrackets6) {
 
     EXPECT_EQ(temp.getData(), result);
 }
+
+TEST(Interpreter, OperationWithBrackets7) {
+    string line = "(1.0/2+2)*3-1*(2-3*4)+1";
+    string result = "18.5";
+
+    Interpreter program;
+    Data temp = program.execute(line);
+
+    EXPECT_EQ(temp.getData(), result);
+}
