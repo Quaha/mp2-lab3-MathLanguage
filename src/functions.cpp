@@ -153,7 +153,7 @@ Data __EQUAL__OPERATOR__(const vector<Data>& parameters) {
 
     string name = parameters[0].getData();
     if (parameters[0].getType() != VARIABLE && parameters[0].getType() != REAL_VARIABLE && parameters[0].getType() != INTEGER_VARIABLE) {
-        throw std::invalid_argument("ERROR: value can only be assigned to a number!");
+        throw std::invalid_argument("ERROR: value can only be assigned to a variable!");
     }
 
     global_memory->program_data.setWord(name, values[0]);
